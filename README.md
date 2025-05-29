@@ -2,7 +2,7 @@
 
 Welcome to **mnpl.ir**, a minimalist HTML-based Minesweeper game made for fun and learning.
 
-This project is a simple browser-based version of the classic **Minesweeper** game. It's built using pure HTML, CSS, and JavaScript with no external dependencies.
+This project is a simple browser-based version of the classic **Minesweeper** game. It's built using pure HTML, CSS, and JavaScript with no external dependencies. (Well, except for the Tailwind CSS and Google Fonts)
 
 ## 🛡 Hosting & Protection
 - **Hosted on**: GitHub Pages  
