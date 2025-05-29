@@ -1,0 +1,100 @@
+name: Update README with Latest Version
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+
+jobs:
+  update_readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Allow the action to write to the repository
+      pull-requests: read # Allow the action to read pull request information if needed (not strictly for this version)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+
+      - name: Get latest version from commit messages
+        id: get_version
+        run: |
+          # Get the latest commit message that matches the version format
+          # This looks for "Version x.x.x (Beta)" or "Version x.x.x"
+          # It processes commits from newest to oldest
+          commit_message=$(git log --pretty=%B -n 20 | grep -Eo "Version [0-9]+\.[0-9]+\.[0-9]+( \(Beta\))?" | head -n 1)
+
+          if [[ -n "$commit_message" ]]; then
+            echo "Found version string: $commit_message"
+            # Extract the full version string (e.g., "Version 1.2.3 (Beta)" or "Version 1.2.3")
+            version_string=$(echo "$commit_message" | sed -E 's/Version //')
+            echo "Extracted version: $version_string"
+            echo "version_string=$version_string" >> $GITHUB_OUTPUT
+            echo "found_version=true" >> $GITHUB_OUTPUT
+          else
+            echo "No matching version found in recent commit messages."
+            echo "found_version=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update README.md if version found
+        if: steps.get_version.outputs.found_version == 'true'
+        run: |
+          VERSION_STRING="${{ steps.get_version.outputs.version_string }}"
+          CURRENT_DATE=$(date +"%B %d, %Y")
+          NEW_VERSION_LINE="**v${VERSION_STRING}** – ${CURRENT_DATE}"
+          README_FILE="README.md"
+
+          echo "New version line will be: $NEW_VERSION_LINE"
+
+          # Read the README.md content
+          README_CONTENT=$(cat $README_FILE)
+
+          # Use awk to replace the content under "## 🚀 Latest Version"
+          # This looks for the line "## 🚀 Latest Version" and replaces the *next two lines*
+          # Adjust if your structure between the heading and the link is different
+          awk -v new_line="$NEW_VERSION_LINE" '
+          BEGIN {printing=1}
+          /## 🚀 Latest Version/ {
+            print
+            print new_line
+            # Skip the next two lines (old version and date, and the blank line if any)
+            # You might need to adjust '2' if the number of lines to skip changes
+            getline; # Skip old version line
+            # If there's a blank line after the old version before the [View all changes ->] link, skip it too.
+            # peek_next = getline next_line
+            # if (peek_next > 0 && next_line ~ /^$/) {
+            #   # it's a blank line, do nothing to effectively skip it
+            # } else if (peek_next > 0) {
+            #   # it's not a blank line, print it and set it for the next iteration
+            #   print next_line
+            # }
+            # For simplicity, assuming the [View all changes ->] is always the immediate next non-blank line after the version.
+            # So we just need to ensure we replace the old version line.
+            # The script will look for the "## 🚀 Latest Version" header, print it, print the new version line,
+            # then skip the old version line and continue printing the rest.
+            # This simplified awk script assumes the old version is on the immediate next line.
+            getline; # Consumes the old version line
+            next
+          }
+          {print}
+          ' "$README_FILE" > tmp_readme.md && mv tmp_readme.md "$README_FILE"
+
+          echo "README.md updated."
+
+      - name: Commit and push changes
+        if: steps.get_version.outputs.found_version == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add README.md
+          # Check if there are changes to commit
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: Update README with latest version from commit"
+            git push
+            echo "Changes pushed to the repository."
+          else
+            echo "No changes to commit in README.md."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
