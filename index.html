@@ -1,1154 +1,1158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minesweeper</title> 
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Minesweeper</title>
 	<script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root { /* Classic Theme (Default) */
-            --body-bg: #f3f4f6; --container-bg: #ffffff; --container-shadow: #d1d5db; 
-            --text-color: #1f2937; --text-muted-color: #4b5563; --border-color: #d1d5db; 
-            --input-bg: #ffffff; --input-border: #d1d5db; --button-bg: #3b82f6; 
-            --button-hover-bg: #2563eb; --button-text-color: #ffffff; 
-            --smiley-bg: #e5e7eb; --smiley-border: #9ca3af; --cell-hidden-bg: #d1d5db; 
-            --cell-hidden-hover-bg: #e5e7eb; --cell-revealed-bg: #f9fafb; 
-            --cell-border-color: #9ca3af; --cell-mine-bg: #ef4444; --cell-mine-text: #ffffff; 
-            --cell-flagged-bg: #facc15; --cell-question-bg: #a5b4fc; --cell-question-text: #3730a3; 
-            --game-board-bg: #9ca3af; --cell-misflagged-text: #dc2626; /* red-600 */
-            --cell-detonated-mine-bg: #b91c1c; /* red-700 */
-            --pause-overlay-bg: rgba(0,0,0,0.65); --pause-icon-color: #ffffff;
-            --pause-overlay-content-bg: var(--container-bg);
-            --error-overlay-bg: rgba(50, 50, 50, 0.5); 
-            --error-overlay-text-color: var(--cell-misflagged-text); 
-            --error-overlay-content-bg: var(--container-bg); 
-            --tab-active-border: var(--button-bg);
-            --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--cell-hidden-hover-bg);
-            --control-button-hover-bg: var(--cell-hidden-bg);
-            --control-button-text: var(--text-color);
-            --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-            --cell-num-1: #3b82f6; --cell-num-2: #10b981; --cell-num-3: #ef4444;
-            --cell-num-4: #6366f1; --cell-num-5: #8b5cf6; --cell-num-6: #ec4899;
-            --cell-num-7: #f97316; --cell-num-8: #78716c;
-        }
-        body.theme-dark {
-            --body-bg: #111827; --container-bg: #1f2937; --container-shadow: #000000;
-            --text-color: #f3f4f6; --text-muted-color: #9ca3af; --border-color: #4b5563;
-            --input-bg: #374151; --input-border: #4b5563; --button-bg: #065f46;
-            --button-hover-bg: #047857; --button-text-color: #d1fae5;
-            --smiley-bg: #374151; --smiley-border: #4b5563; --cell-hidden-bg: #4b5563;
-            --cell-hidden-hover-bg: #52525b; --cell-revealed-bg: #374151;
-            --cell-border-color: #6b7280; --cell-mine-bg: #f87171; --cell-mine-text: #1f2937;
-            --cell-flagged-bg: #fde047; --cell-question-bg: #818cf8; --cell-question-text: #e0e7ff;
-            --game-board-bg: #6b7280; --cell-misflagged-text: #fda4af; 
-            --cell-detonated-mine-bg: #ef4444; 
-            --pause-overlay-bg: rgba(0,0,0,0.75); --pause-icon-color: #e5e7eb;
-            --pause-overlay-content-bg: #272f3e; 
-            --error-overlay-bg: rgba(0, 0, 0, 0.6); 
-            --error-overlay-text-color: var(--cell-misflagged-text);
-            --error-overlay-content-bg: var(--container-bg);
-            --tab-active-border: var(--button-bg);
-            --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--input-bg);
-            --control-button-hover-bg: var(--cell-hidden-hover-bg);
-            --control-button-text: var(--text-color);
-            --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-            --cell-num-1: #60a5fa; --cell-num-2: #34d399; --cell-num-3: #f87171;
-            --cell-num-4: #818cf8; --cell-num-5: #a78bfa; --cell-num-6: #f472b6;
-            --cell-num-7: #fb923c; --cell-num-8: #a8a29e;
-        }
-        body.theme-ocean {
-            --body-bg: #e0f2fe; --container-bg: #ffffff; --container-shadow: #bae6fd;
-            --text-color: #0c4a6e; --text-muted-color: #0369a1; --border-color: #7dd3fc;
-            --input-bg: #ffffff; --input-border: #7dd3fc; --button-bg: #0ea5e9;
-            --button-hover-bg: #0284c7; --button-text-color: #ffffff;
-            --smiley-bg: #f0f9ff; --smiley-border: #7dd3fc; --cell-hidden-bg: #bae6fd;
-            --cell-hidden-hover-bg: #e0f2fe; --cell-revealed-bg: #f0f9ff;
-            --cell-border-color: #7dd3fc; --cell-mine-bg: #f43f5e; --cell-mine-text: #ffffff;
-            --cell-flagged-bg: #fde047; --cell-question-bg: #ccb1ff; --cell-question-text: #5b21b6;
-            --game-board-bg: #7dd3fc; --cell-misflagged-text: #be123c; 
-            --cell-detonated-mine-bg: #e11d48; 
-            --pause-overlay-bg: rgba(14, 165, 233, 0.5); --pause-icon-color: #ffffff;
-            --pause-overlay-content-bg: var(--container-bg);
-            --error-overlay-bg: rgba(10, 70, 100, 0.5); 
-            --error-overlay-text-color: var(--cell-misflagged-text);
-            --error-overlay-content-bg: var(--container-bg);
-            --tab-active-border: var(--button-bg);
-            --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--cell-hidden-hover-bg);
-            --control-button-hover-bg: var(--cell-hidden-bg);
-            --control-button-text: var(--text-color);
-            --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-        }
-        body.theme-nature { 
-            --body-bg: #e8f5e9; --container-bg: #fdfbf7; --container-shadow: #c8e6c9; 
-            --text-color: #382822; --text-muted-color: #5d4037; --border-color: #a5d6a7; 
-            --input-bg: #f1f8e9; --input-border: #a5d6a7; --button-bg: #4caf50; 
-            --button-hover-bg: #388e3c; --button-text-color: #ffffff;
-            --smiley-bg: #c8e6c9; --smiley-border: #81c784; --cell-hidden-bg: #e0e0e0; 
-            --cell-hidden-hover-bg: #eeeeee; --cell-revealed-bg: #f1f8e9; 
-            --cell-border-color: #bdbdbd; --cell-mine-bg: #795548; --cell-mine-text: #ffffff;
-            --cell-flagged-bg: #ffeb3b; --cell-question-bg: #81d4fa; --cell-question-text: #01579b; 
-            --game-board-bg: #a1887f; --cell-misflagged-text: #d32f2f; 
-            --cell-detonated-mine-bg: #5d4037; --pause-overlay-bg: rgba(76, 175, 80, 0.6); 
-            --pause-icon-color: #ffffff; --pause-overlay-content-bg: var(--container-bg); 
-            --error-overlay-bg: rgba(80, 100, 80, 0.6); 
-            --error-overlay-text-color: var(--cell-misflagged-text);
-            --error-overlay-content-bg: var(--container-bg);
-            --tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--input-bg); --control-button-hover-bg: #dcedc8; 
-            --control-button-text: var(--text-color); --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-            --cell-num-1: #1976d2; --cell-num-2: #388e3c; --cell-num-3: #d32f2f; --cell-num-4: #5d4037;
-            --cell-num-5: #7b1fa2; --cell-num-6: #0097a7; --cell-num-7: #f57c00; --cell-num-8: #616161;
-        }
-        body.theme-neon { 
-            --body-bg: #1e0f2d; --container-bg: #2d0f4b; --container-shadow: #000000;
-            --text-color: #8effff; --text-muted-color: #a78bfa; --border-color: #a855f7; 
-            --input-bg: #3b0764; --input-border: #a855f7; --button-bg: #9333ea; 
-            --button-hover-bg: #a855f7; --button-text-color: #f5d0fe; 
-            --smiley-bg: #3b0764; --smiley-border: #a855f7; --cell-hidden-bg: #4c1d95; 
-            --cell-hidden-hover-bg: #5b21b6; --cell-revealed-bg: #3b0764; 
-            --cell-border-color: #7e22ce; --cell-mine-bg: #f43f5e; --cell-mine-text: #1e0f2d;
-            --cell-flagged-bg: #fde047; --cell-question-bg: #38bdf8; --cell-question-text: #1e0f2d;
-            --game-board-bg: #a855f7; --cell-misflagged-text: #f43f5e; 
-            --cell-detonated-mine-bg: #e11d48; --pause-overlay-bg: rgba(147, 51, 234, 0.6); 
-            --pause-icon-color: #f5d0fe; --pause-overlay-content-bg: var(--container-bg); 
-            --error-overlay-bg: rgba(40, 10, 60, 0.7); 
-            --error-overlay-text-color: var(--cell-misflagged-text);
-            --error-overlay-content-bg: var(--container-bg);
-            --tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--input-bg); --control-button-hover-bg: #4c1d95; 
-            --control-button-text: var(--text-color); --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-            --cell-num-1: #8effff; --cell-num-2: #39ff14; --cell-num-3: #ff00ff; --cell-num-4: #f100cb;
-            --cell-num-5: #00ccff; --cell-num-6: #a855f7; --cell-num-7: #d946ef; --cell-num-8: #fef08a;
-        }
-        body.theme-aero {
-            --body-bg: #d6eaff; --container-bg: rgba(230, 240, 255, 0.85); --container-shadow: #a8caff;
-            --text-color: #2c3e50; --text-muted-color: #52606d; --border-color: #a0b4c8; 
-            --input-bg: rgba(255, 255, 255, 0.75); --input-border: #b0c4de; --button-bg: #357ABD; 
-            --button-hover-bg: #2a6296; --button-text-color: #ffffff;
-            --smiley-bg: #d0e0f0; --smiley-border: #a0b4c8; --cell-hidden-bg: #c0d0e0; 
-            --cell-hidden-hover-bg: #d4e0ee; --cell-revealed-bg: #e8f0f8; 
-            --cell-border-color: #b0c4de; --cell-mine-bg: #d9534f; --cell-mine-text: #ffffff;
-            --cell-flagged-bg: #f0ad4e; --cell-question-bg: #5bc0de; --cell-question-text: #ffffff;
-            --game-board-bg: #b0c4de; --cell-misflagged-text: #c9302c; 
-            --cell-detonated-mine-bg: #a94442; --pause-overlay-bg: rgba(100, 149, 237, 0.5); 
-            --pause-icon-color: #ffffff; --pause-overlay-content-bg: rgba(220, 230, 245, 0.9); 
-            --error-overlay-bg: rgba(100, 120, 150, 0.5); 
-            --error-overlay-text-color: var(--cell-misflagged-text);
-            --error-overlay-content-bg: var(--container-bg);
-            --tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
-            --control-button-bg: var(--input-bg); --control-button-hover-bg: #d4e0ee; 
-            --control-button-text: var(--text-color); --control-button-border: var(--border-color);
-            --input-error-text: var(--cell-misflagged-text);
-            --cell-num-1: #357ABD; --cell-num-2: #5cb85c; --cell-num-3: #d9534f; --cell-num-4: #46407A;
-            --cell-num-5: #9d58a0; --cell-num-6: #d94a8c; --cell-num-7: #ce7e00; --cell-num-8: #606c7a;
-        }
-        body { font-family: 'Inter', sans-serif; user-select: none; background-color: var(--body-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-        .main-container { background-color: var(--container-bg); box-shadow: 0 10px 15px -3px var(--container-shadow), 0 4px 6px -2px var(--container-shadow); transition: background-color 0.3s, box-shadow 0.3s; }
-        .text-muted { color: var(--text-muted-color); }
-        .border-default { border-color: var(--border-color); }
-        .input-default { 
-            background-color: var(--input-bg); 
-            border-color: var(--input-border); 
-            color: var(--text-color); 
-            padding: 0.375rem 0.5rem; 
-            border-width: 1px;
-            border-radius: 0.375rem; 
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); 
-            font-size: 0.875rem; 
-            line-height: 1.25rem; 
-        }
-        .input-default:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--button-bg); 
-            border-color: var(--button-bg);
-        }
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		:root { /* Classic Theme (Default) */
+			--body-bg: #f3f4f6; --container-bg: #ffffff; --container-shadow: #d1d5db;
+			--text-color: #1f2937; --text-muted-color: #4b5563; --border-color: #d1d5db;
+			--input-bg: #ffffff; --input-border: #d1d5db; --button-bg: #3b82f6;
+			--button-hover-bg: #2563eb; --button-text-color: #ffffff;
+			--smiley-bg: #e5e7eb; --smiley-border: #9ca3af; --cell-hidden-bg: #d1d5db;
+			--cell-hidden-hover-bg: #e5e7eb; --cell-revealed-bg: #f9fafb;
+			--cell-border-color: #9ca3af; --cell-mine-bg: #ef4444; --cell-mine-text: #ffffff;
+			--cell-flagged-bg: #facc15; --cell-question-bg: #a5b4fc; --cell-question-text: #3730a3;
+			--game-board-bg: #9ca3af; --cell-misflagged-text: #dc2626; /* red-600 */
+			--cell-detonated-mine-bg: #b91c1c; /* red-700 */
+			--pause-overlay-bg: rgba(0,0,0,0.65); --pause-icon-color: #ffffff;
+			--pause-overlay-content-bg: var(--container-bg);
+			--error-overlay-bg: rgba(50, 50, 50, 0.5);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg);
+			--tab-active-text: var(--button-bg);
+			--control-button-bg: var(--cell-hidden-hover-bg);
+			--control-button-hover-bg: var(--cell-hidden-bg);
+			--control-button-text: var(--text-color);
+			--control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+			--cell-num-1: #3b82f6; --cell-num-2: #10b981; --cell-num-3: #ef4444;
+			--cell-num-4: #6366f1; --cell-num-5: #8b5cf6; --cell-num-6: #ec4899;
+			--cell-num-7: #f97316; --cell-num-8: #78716c;
+		}
+		body.theme-dark {
+			--body-bg: #111827; --container-bg: #1f2937; --container-shadow: #000000;
+			--text-color: #f3f4f6; --text-muted-color: #9ca3af; --border-color: #4b5563;
+			--input-bg: #374151; --input-border: #4b5563; --button-bg: #065f46;
+			--button-hover-bg: #047857; --button-text-color: #d1fae5;
+			--smiley-bg: #374151; --smiley-border: #4b5563; --cell-hidden-bg: #4b5563;
+			--cell-hidden-hover-bg: #52525b; --cell-revealed-bg: #374151;
+			--cell-border-color: #6b7280; --cell-mine-bg: #f87171; --cell-mine-text: #1f2937;
+			--cell-flagged-bg: #fde047; --cell-question-bg: #818cf8; --cell-question-text: #e0e7ff;
+			--game-board-bg: #6b7280; --cell-misflagged-text: #fda4af;
+			--cell-detonated-mine-bg: #ef4444;
+			--pause-overlay-bg: rgba(0,0,0,0.75); --pause-icon-color: #e5e7eb;
+			--pause-overlay-content-bg: #272f3e;
+			--error-overlay-bg: rgba(0, 0, 0, 0.6);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg);
+			--tab-active-text: var(--button-bg);
+			--control-button-bg: var(--input-bg);
+			--control-button-hover-bg: var(--cell-hidden-hover-bg);
+			--control-button-text: var(--text-color);
+			--control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+			--cell-num-1: #60a5fa; --cell-num-2: #34d399; --cell-num-3: #f87171;
+			--cell-num-4: #818cf8; --cell-num-5: #a78bfa; --cell-num-6: #f472b6;
+			--cell-num-7: #fb923c; --cell-num-8: #a8a29e;
+		}
+		body.theme-ocean {
+			--body-bg: #e0f2fe; --container-bg: #ffffff; --container-shadow: #bae6fd;
+			--text-color: #0c4a6e; --text-muted-color: #0369a1; --border-color: #7dd3fc;
+			--input-bg: #ffffff; --input-border: #7dd3fc; --button-bg: #0ea5e9;
+			--button-hover-bg: #0284c7; --button-text-color: #ffffff;
+			--smiley-bg: #f0f9ff; --smiley-border: #7dd3fc; --cell-hidden-bg: #bae6fd;
+			--cell-hidden-hover-bg: #e0f2fe; --cell-revealed-bg: #f0f9ff;
+			--cell-border-color: #7dd3fc; --cell-mine-bg: #f43f5e; --cell-mine-text: #ffffff;
+			--cell-flagged-bg: #fde047; --cell-question-bg: #ccb1ff; --cell-question-text: #5b21b6;
+			--game-board-bg: #7dd3fc; --cell-misflagged-text: #be123c;
+			--cell-detonated-mine-bg: #e11d48;
+			--pause-overlay-bg: rgba(14, 165, 233, 0.5); --pause-icon-color: #ffffff;
+			--pause-overlay-content-bg: var(--container-bg);
+			--error-overlay-bg: rgba(10, 70, 100, 0.5);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg);
+			--tab-active-text: var(--button-bg);
+			--control-button-bg: var(--cell-hidden-hover-bg);
+			--control-button-hover-bg: var(--cell-hidden-bg);
+			--control-button-text: var(--text-color);
+			--control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+		}
+		body.theme-nature {
+			--body-bg: #e8f5e9; --container-bg: #fdfbf7; --container-shadow: #c8e6c9;
+			--text-color: #382822; --text-muted-color: #5d4037; --border-color: #a5d6a7;
+			--input-bg: #f1f8e9; --input-border: #a5d6a7; --button-bg: #4caf50;
+			--button-hover-bg: #388e3c; --button-text-color: #ffffff;
+			--smiley-bg: #c8e6c9; --smiley-border: #81c784; --cell-hidden-bg: #e0e0e0;
+			--cell-hidden-hover-bg: #eeeeee; --cell-revealed-bg: #f1f8e9;
+			--cell-border-color: #bdbdbd; --cell-mine-bg: #795548; --cell-mine-text: #ffffff;
+			--cell-flagged-bg: #ffeb3b; --cell-question-bg: #81d4fa; --cell-question-text: #01579b;
+			--game-board-bg: #a1887f; --cell-misflagged-text: #d32f2f;
+			--cell-detonated-mine-bg: #5d4037; --pause-overlay-bg: rgba(76, 175, 80, 0.6);
+			--pause-icon-color: #ffffff; --pause-overlay-content-bg: var(--container-bg);
+			--error-overlay-bg: rgba(80, 100, 80, 0.6);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
+			--control-button-bg: var(--input-bg); --control-button-hover-bg: #dcedc8;
+			--control-button-text: var(--text-color); --control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+			--cell-num-1: #1976d2; --cell-num-2: #388e3c; --cell-num-3: #d32f2f; --cell-num-4: #5d4037;
+			--cell-num-5: #7b1fa2; --cell-num-6: #0097a7; --cell-num-7: #f57c00; --cell-num-8: #616161;
+		}
+		body.theme-neon {
+			--body-bg: #1e0f2d; --container-bg: #2d0f4b; --container-shadow: #000000;
+			--text-color: #8effff; --text-muted-color: #a78bfa; --border-color: #a855f7;
+			--input-bg: #3b0764; --input-border: #a855f7; --button-bg: #9333ea;
+			--button-hover-bg: #a855f7; --button-text-color: #f5d0fe;
+			--smiley-bg: #3b0764; --smiley-border: #a855f7; --cell-hidden-bg: #4c1d95;
+			--cell-hidden-hover-bg: #5b21b6; --cell-revealed-bg: #3b0764;
+			--cell-border-color: #7e22ce; --cell-mine-bg: #f43f5e; --cell-mine-text: #1e0f2d;
+			--cell-flagged-bg: #fde047; --cell-question-bg: #38bdf8; --cell-question-text: #1e0f2d;
+			--game-board-bg: #a855f7; --cell-misflagged-text: #f43f5e;
+			--cell-detonated-mine-bg: #e11d48; --pause-overlay-bg: rgba(147, 51, 234, 0.6);
+			--pause-icon-color: #f5d0fe; --pause-overlay-content-bg: var(--container-bg);
+			--error-overlay-bg: rgba(40, 10, 60, 0.7);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
+			--control-button-bg: var(--input-bg); --control-button-hover-bg: #4c1d95;
+			--control-button-text: var(--text-color); --control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+			--cell-num-1: #8effff; --cell-num-2: #39ff14; --cell-num-3: #ff00ff; --cell-num-4: #f100cb;
+			--cell-num-5: #00ccff; --cell-num-6: #a855f7; --cell-num-7: #d946ef; --cell-num-8: #fef08a;
+		}
+		body.theme-aero {
+			--body-bg: #d6eaff; --container-bg: rgba(230, 240, 255, 0.85); --container-shadow: #a8caff;
+			--text-color: #2c3e50; --text-muted-color: #52606d; --border-color: #a0b4c8;
+			--input-bg: rgba(255, 255, 255, 0.75); --input-border: #b0c4de; --button-bg: #357ABD;
+			--button-hover-bg: #2a6296; --button-text-color: #ffffff;
+			--smiley-bg: #d0e0f0; --smiley-border: #a0b4c8; --cell-hidden-bg: #c0d0e0;
+			--cell-hidden-hover-bg: #d4e0ee; --cell-revealed-bg: #e8f0f8;
+			--cell-border-color: #b0c4de; --cell-mine-bg: #d9534f; --cell-mine-text: #ffffff;
+			--cell-flagged-bg: #f0ad4e; --cell-question-bg: #5bc0de; --cell-question-text: #ffffff;
+			--game-board-bg: #b0c4de; --cell-misflagged-text: #c9302c;
+			--cell-detonated-mine-bg: #a94442; --pause-overlay-bg: rgba(100, 149, 237, 0.5);
+			--pause-icon-color: #ffffff; --pause-overlay-content-bg: rgba(220, 230, 245, 0.9);
+			--error-overlay-bg: rgba(100, 120, 150, 0.5);
+			--error-overlay-text-color: var(--cell-misflagged-text);
+			--error-overlay-content-bg: var(--container-bg);
+			--tab-active-border: var(--button-bg); --tab-active-text: var(--button-bg);
+			--control-button-bg: var(--input-bg); --control-button-hover-bg: #d4e0ee;
+			--control-button-text: var(--text-color); --control-button-border: var(--border-color);
+			--input-error-text: var(--cell-misflagged-text);
+			--cell-num-1: #357ABD; --cell-num-2: #5cb85c; --cell-num-3: #d9534f; --cell-num-4: #46407A;
+			--cell-num-5: #9d58a0; --cell-num-6: #d94a8c; --cell-num-7: #ce7e00; --cell-num-8: #606c7a;
+		}
+		body { font-family: 'Inter', sans-serif; user-select: none; background-color: var(--body-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
+		.main-container { background-color: var(--container-bg); box-shadow: 0 10px 15px -3px var(--container-shadow), 0 4px 6px -2px var(--container-shadow); transition: background-color 0.3s, box-shadow 0.3s; }
+		.text-muted { color: var(--text-muted-color); }
+		.border-default { border-color: var(--border-color); }
+		.input-default {
+			background-color: var(--input-bg);
+			border-color: var(--input-border);
+			color: var(--text-color);
+			padding: 0.375rem 0.5rem;
+			border-width: 1px;
+			border-radius: 0.375rem;
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+			font-size: 0.875rem;
+			line-height: 1.25rem;
+		}
+		.input-default:focus {
+			outline: none;
+			box-shadow: 0 0 0 2px var(--button-bg);
+			border-color: var(--button-bg);
+		}
 
-        .button-primary { background-color: var(--button-bg); color: var(--button-text-color); transition: background-color 0.15s ease-in-out; }
-        .button-primary:hover { background-color: var(--button-hover-bg); }
-        .button-primary:disabled { opacity: 0.5; cursor: not-allowed; } 
-        .button-secondary { background-color: var(--cell-hidden-hover-bg); color: var(--text-color); border: 1px solid var(--border-color); }
-        .button-secondary:hover { background-color: var(--cell-hidden-bg); }
-        .button-danger { background-color: var(--cell-mine-bg); color: var(--cell-mine-text); }
-        .button-danger:hover { opacity: 0.8; }
+		.button-primary { background-color: var(--button-bg); color: var(--button-text-color); transition: background-color 0.15s ease-in-out; }
+		.button-primary:hover { background-color: var(--button-hover-bg); }
+		.button-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+		.button-secondary { background-color: var(--cell-hidden-hover-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+		.button-secondary:hover { background-color: var(--cell-hidden-bg); }
+		.button-danger { background-color: var(--cell-mine-bg); color: var(--cell-mine-text); }
+		.button-danger:hover { opacity: 0.8; }
 
-        .control-button { 
-            padding: 0.375rem 0.5rem; 
-            border-radius: 0.375rem; 
-            font-size: 1.25rem; 
-            line-height: 1.5rem;
-            border: 1px solid var(--control-button-border);
-            background-color: var(--control-button-bg);
-            color: var(--control-button-text);
-            transition: background-color 0.15s ease-in-out;
-        }
-        .control-button:hover { background-color: var(--control-button-hover-bg); }
-        .control-button:focus { outline: none; box-shadow: 0 0 0 2px var(--button-bg); }
+		.control-button {
+			padding: 0.375rem 0.5rem;
+			border-radius: 0.375rem;
+			font-size: 1.25rem;
+			line-height: 1.5rem;
+			border: 1px solid var(--control-button-border);
+			background-color: var(--control-button-bg);
+			color: var(--control-button-text);
+			transition: background-color 0.15s ease-in-out;
+		}
+		.control-button:hover { background-color: var(--control-button-hover-bg); }
+		.control-button:focus { outline: none; box-shadow: 0 0 0 2px var(--button-bg); }
 
-        .smiley-button { width: 40px; height: 40px; font-size: 24px; display: flex; justify-content: center; align-items: center; border: 2px outset var(--smiley-border); background-color: var(--smiley-bg); cursor: pointer; flex-shrink: 0; }
-        .smiley-button:active { border-style: inset; }
-        
-        .cell { 
-            border: 1px solid var(--cell-border-color); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-weight: bold; 
-            cursor: pointer; 
-            background-color: var(--cell-hidden-bg); 
-            transition: background-color 0.1s ease-in-out;
-        }
-        .cell:hover:not(.revealed) { background-color: var(--cell-hidden-hover-bg); }
-        .cell.revealed { background-color: var(--cell-revealed-bg); border: 1px solid var(--cell-border-color); }
-        .cell.mine { background-color: var(--cell-mine-bg); color: var(--cell-mine-text); }
-        .cell.mine-detonated { background-color: var(--cell-detonated-mine-bg) !important; }
-        .cell.flagged { background-color: var(--cell-flagged-bg); } 
-        .cell.question { background-color: var(--cell-question-bg); color: var(--cell-question-text); }
-        .cell.misflagged { background-color: var(--cell-revealed-bg); color: var(--cell-misflagged-text); font-weight: bold; }
-        .cell-1 { color: var(--cell-num-1); } .cell-2 { color: var(--cell-num-2); } .cell-3 { color: var(--cell-num-3); } .cell-4 { color: var(--cell-num-4); } .cell-5 { color: var(--cell-num-5); } .cell-6 { color: var(--cell-num-6); } .cell-7 { color: var(--cell-num-7); } .cell-8 { color: var(--cell-num-8); }
-        
-        .game-board-grid { background-color: var(--game-board-bg); }
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-        .modal-content { background-color: var(--container-bg); color: var(--text-color); padding: 20px; border: 1px solid var(--border-color); width: 90%; max-width: 500px; border-radius: 0.5rem; text-align: center; }
-        .hidden { display: none; }
-        .custom-input-label { font-size: 0.875rem; font-weight: 500; color: var(--text-muted-color); margin-bottom: 0.25rem; text-align: center; }
-        
-        #pauseOverlay { 
-            cursor: pointer; 
-            background-color: var(--pause-overlay-bg); 
-            backdrop-filter: blur(3px); 
-            -webkit-backdrop-filter: blur(3px); 
-        }
-        #pauseOverlayContent {
-            background-color: var(--pause-overlay-content-bg);
-            padding: 2rem; 
-            border-radius: 0.5rem; 
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); 
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-        #pauseOverlayContent .resume-icon {
-            color: var(--button-bg); 
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
-        }
-        #pauseOverlayContent .resume-icon:hover {
-            opacity: 0.8;
-        }
+		.smiley-button { width: 40px; height: 40px; font-size: 24px; display: flex; justify-content: center; align-items: center; border: 2px outset var(--smiley-border); background-color: var(--smiley-bg); cursor: pointer; flex-shrink: 0; }
+		.smiley-button:active { border-style: inset; }
 
-        .game-paused .main-container > div:not(#pauseOverlay):not(.modal), 
-        .game-paused .main-container > h1:not(#pauseOverlay):not(.modal) {
-             filter: blur(4px); pointer-events: none; 
-        }
-        
-        #customErrorOverlay { 
-            position: absolute; 
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--error-overlay-bg);
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
-            z-index: 5; 
-            display: flex; 
-            justify-content: center;
-            align-items: center;
-        }
-        #customErrorOverlayContent {
-            background-color: var(--error-overlay-content-bg);
-            color: var(--error-overlay-text-color); 
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        table { width: 100%; margin-top: 10px; border-collapse: collapse; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { font-weight: 600; color: var(--text-muted-color); }
-        #playerNameError { min-height: 1rem; line-height: 1rem; margin-top: 0.75rem; /* Increased margin-top */ }
-        .tab-button {
-            padding: 0.5rem 1rem; 
-            border-bottom: 2px solid transparent;
-            margin-bottom: -1px; 
-            cursor: pointer;
-            color: var(--text-muted-color);
-        }
-        .tab-button.active {
-            border-bottom-color: var(--tab-active-border);
-            color: var(--tab-active-text);
-            font-weight: 600;
-        }
-    </style>
+		.cell {
+			border: 1px solid var(--cell-border-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-weight: bold;
+			cursor: pointer;
+			background-color: var(--cell-hidden-bg);
+			transition: background-color 0.1s ease-in-out;
+		}
+		.cell:hover:not(.revealed) { background-color: var(--cell-hidden-hover-bg); }
+		.cell.revealed { background-color: var(--cell-revealed-bg); border: 1px solid var(--cell-border-color); }
+		.cell.mine { background-color: var(--cell-mine-bg); color: var(--cell-mine-text); }
+		.cell.mine-detonated { background-color: var(--cell-detonated-mine-bg) !important; }
+		.cell.flagged { background-color: var(--cell-flagged-bg); }
+		.cell.question { background-color: var(--cell-question-bg); color: var(--cell-question-text); }
+		.cell.misflagged { background-color: var(--cell-revealed-bg); color: var(--cell-misflagged-text); font-weight: bold; }
+		.cell-1 { color: var(--cell-num-1); } .cell-2 { color: var(--cell-num-2); } .cell-3 { color: var(--cell-num-3); } .cell-4 { color: var(--cell-num-4); } .cell-5 { color: var(--cell-num-5); } .cell-6 { color: var(--cell-num-6); } .cell-7 { color: var(--cell-num-7); } .cell-8 { color: var(--cell-num-8); }
+
+		.game-board-grid { background-color: var(--game-board-bg); }
+		.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+		.modal-content { background-color: var(--container-bg); color: var(--text-color); padding: 20px; border: 1px solid var(--border-color); width: 90%; max-width: 500px; border-radius: 0.5rem; text-align: center; }
+		.hidden { display: none; }
+		.custom-input-label { font-size: 0.875rem; font-weight: 500; color: var(--text-muted-color); margin-bottom: 0.25rem; text-align: center; }
+
+		#pauseOverlay {
+			cursor: pointer;
+			background-color: var(--pause-overlay-bg);
+			backdrop-filter: blur(3px);
+			-webkit-backdrop-filter: blur(3px);
+		}
+		#pauseOverlayContent {
+			background-color: var(--pause-overlay-content-bg);
+			padding: 2rem;
+			border-radius: 0.5rem;
+			box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+			text-align: center;
+			border: 1px solid var(--border-color);
+		}
+		#pauseOverlayContent .resume-icon {
+			color: var(--button-bg);
+			filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+		}
+		#pauseOverlayContent .resume-icon:hover {
+			opacity: 0.8;
+		}
+
+		.game-paused .main-container > div:not(#pauseOverlay):not(.modal),
+		.game-paused .main-container > h1:not(#pauseOverlay):not(.modal) {
+			filter: blur(4px); pointer-events: none;
+		}
+
+		#customErrorOverlay {
+			position: absolute;
+			top: 0; left: 0; right: 0; bottom: 0;
+			background-color: var(--error-overlay-bg);
+			backdrop-filter: blur(2px);
+			-webkit-backdrop-filter: blur(2px);
+			z-index: 5;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		#customErrorOverlayContent {
+			background-color: var(--error-overlay-content-bg);
+			color: var(--error-overlay-text-color);
+			padding: 1.5rem;
+			border-radius: 0.5rem;
+			box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+		}
+		table { width: 100%; margin-top: 10px; border-collapse: collapse; }
+		th, td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
+		th { font-weight: 600; color: var(--text-muted-color); }
+		#playerNameError { min-height: 1rem; line-height: 1rem; margin-top: 0.75rem; /* Increased margin-top */ }
+		.tab-button {
+			padding: 0.5rem 1rem;
+			border-bottom: 2px solid transparent;
+			margin-bottom: -1px;
+			cursor: pointer;
+			color: var(--text-muted-color);
+		}
+		.tab-button.active {
+			border-bottom-color: var(--tab-active-border);
+			color: var(--tab-active-text);
+			font-weight: 600;
+		}
+	</style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div id="mainGameContainer" class="main-container p-6 rounded-lg w-full max-w-5xl">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl font-bold">Minesweeper</h1> 
-            <div class="flex items-center space-x-2">
-                <button id="contactButton" class="button-secondary text-sm px-2 py-1 rounded-md">✉️ Contact</button>
-                <button id="viewReportButton" class="button-secondary text-sm px-2 py-1 rounded-md">📊 Report</button>
-                <select id="themeSelector" class="input-default text-sm rounded-md shadow-sm border-default focus:outline-none"> 
-                    <option value="classic">Classic</option>
-                    <option value="dark">Dark</option>
-                    <option value="ocean">Ocean</option>
-                    <option value="nature">Nature</option>
-                    <option value="neon">Neon</option>
-                    <option value="aero">Aero</option>
-                </select>
-                <button id="pauseButton" class="control-button">⏸️</button> 
-                <button id="muteButton" class="control-button">🔊</button> 
-            </div>
-        </div>
-        
-        <div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
-            <div>
-                <label for="difficulty" class="text-sm font-medium text-muted">Difficulty:</label>
-                <select id="difficulty" class="input-default mt-1 block w-full pl-3 pr-10 py-2 text-base border-default focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
-                    <option value="easy">Easy (9x9, 10 mines)</option>
-                    <option value="medium" selected>Medium (16x16, 40 mines)</option>
-                    <option value="hard">Hard (30x16, 99 mines)</option>
-                    <option value="custom">Custom...</option>
-                </select>
-            </div>
-            <div id="customInputsContainer" class="hidden mt-2 sm:mt-0 flex flex-col sm:flex-row flex-wrap gap-x-2 gap-y-2 items-start"> 
-                <div class="flex flex-col items-center">
-                    <label for="customRows" class="custom-input-label block">Rows (5-100):</label> 
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="customRows" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
-                </div>
-                <div class="flex flex-col items-center">
-                    <label for="customCols" class="custom-input-label block">Columns (5-100):</label> 
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="customCols" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
-                </div>
-                <div class="flex flex-col items-center">
-                    <label for="customMines" class="custom-input-label block">Mines (10-Max):</label> 
-                    <input type="text" inputmode="numeric" pattern="[0-9]*" id="customMines" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
-                </div>
-            </div>
-        </div>
+	<div id="mainGameContainer" class="main-container p-6 rounded-lg w-full max-w-5xl">
+		<div class="flex justify-between items-center mb-4">
+			<h1 class="text-3xl font-bold">Minesweeper</h1>
+			<div class="flex items-center space-x-2">
+				<button id="contactButton" class="button-secondary text-sm px-2 py-1 rounded-md">✉️ Contact</button>
+				<button id="viewReportButton" class="button-secondary text-sm px-2 py-1 rounded-md">📊 Report</button>
+				<select id="themeSelector" class="input-default text-sm rounded-md shadow-sm border-default focus:outline-none">
+					<option value="classic">Classic</option>
+					<option value="dark">Dark</option>
+					<option value="ocean">Ocean</option>
+					<option value="nature">Nature</option>
+					<option value="neon">Neon</option>
+					<option value="aero">Aero</option>
+				</select>
+				<button id="pauseButton" class="control-button">⏸️</button>
+				<button id="muteButton" class="control-button">🔊</button>
+			</div>
+		</div>
 
-        <div class="flex justify-between items-center mb-4 text-lg p-2 border-default border rounded-md">
-            <div class="font-semibold flex-1 text-left">Mines: <span id="minesCount">0</span></div>
-            <button id="smileyButton" class="smiley-button mx-2">🙂</button>
-            <div class="font-semibold flex-1 text-right">Time: <span id="timer">0s</span></div>
-        </div>
+		<div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
+			<div>
+				<label for="difficulty" class="text-sm font-medium text-muted">Difficulty:</label>
+				<select id="difficulty" class="input-default mt-1 block w-full pl-3 pr-10 py-2 text-base border-default focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+					<option value="easy">Easy (9x9, 10 mines)</option>
+					<option value="medium" selected>Medium (16x16, 40 mines)</option>
+					<option value="hard">Hard (30x16, 99 mines)</option>
+					<option value="custom">Custom...</option>
+				</select>
+			</div>
+			<div id="customInputsContainer" class="hidden mt-2 sm:mt-0 flex flex-col sm:flex-row flex-wrap gap-x-2 gap-y-2 items-start">
+				<div class="flex flex-col items-center">
+					<label for="customRows" class="custom-input-label block">Rows (5-100):</label>
+					<input type="text" inputmode="numeric" pattern="[0-9]*" id="customRows" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
+				</div>
+				<div class="flex flex-col items-center">
+					<label for="customCols" class="custom-input-label block">Columns (5-100):</label>
+					<input type="text" inputmode="numeric" pattern="[0-9]*" id="customCols" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
+				</div>
+				<div class="flex flex-col items-center">
+					<label for="customMines" class="custom-input-label block">Mines (10-Max):</label>
+					<input type="text" inputmode="numeric" pattern="[0-9]*" id="customMines" class="input-default w-24 p-2 text-sm border-default rounded-md shadow-sm">
+				</div>
+			</div>
+		</div>
 
-        <div class="game-board-wrapper w-full overflow-x-auto relative"> 
-            <div id="gameBoard" class="game-board-grid grid gap-0.5 rounded-sm shadow-inner mx-auto" style="width: fit-content;"></div>
-            <div id="customErrorOverlay" class="hidden absolute inset-0 flex justify-center items-center z-10"> 
-                <div id="customErrorOverlayContent" class="p-6 rounded-lg shadow-xl text-center">
-                    <h2 class="text-2xl font-bold mb-2">⚠️ Invalid Settings</h2>
-                    <p class="text-sm">Please correct the custom difficulty inputs.</p>
-                </div>
-            </div>
-        </div>
+		<div class="flex justify-between items-center mb-4 text-lg p-2 border-default border rounded-md">
+			<div class="font-semibold flex-1 text-left">Mines: <span id="minesCount">0</span></div>
+			<button id="smileyButton" class="smiley-button mx-2">🙂</button>
+			<div class="font-semibold flex-1 text-right">Time: <span id="timer">0s</span></div>
+		</div>
+
+		<div class="game-board-wrapper w-full overflow-x-auto relative">
+			<div id="gameBoard" class="game-board-grid grid gap-0.5 rounded-sm shadow-inner mx-auto" style="width: fit-content;"></div>
+			<div id="customErrorOverlay" class="hidden absolute inset-0 flex justify-center items-center z-10">
+				<div id="customErrorOverlayContent" class="p-6 rounded-lg shadow-xl text-center">
+					<h2 class="text-2xl font-bold mb-2">⚠️ Invalid Settings</h2>
+					<p class="text-sm">Please correct the custom difficulty inputs.</p>
+				</div>
+			</div>
+		</div>
     </div>
 
-    <div id="contactSection" class="main-container p-6 rounded-lg w-full max-w-5xl hidden">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Contact Me</h1>
-            <button id="backToGameButton" class="button-primary px-4 py-2 rounded-lg text-sm">Back to Game</button>
-        </div>
-        <div class="text-left space-y-4">
-            <p>Got feedback, questions, or just want to say hi? Reach out below.</p>
-            <p><strong>Email:</strong> <a href="mailto:feedback@mnpl.ir" class="text-blue-500 hover:underline">feedback@mnpl.ir</a></p>
-            <p><strong>Telegram:</strong> <a href="https://t.me/xx_kittyy" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">t.me/xx_kittyy</a></p>
-            <p>I’ll try to respond as soon as I can. Thanks for visiting!</p>
-            <hr class="my-6 border-default">
-            <p>This project is open-source and hosted on GitHub, with performance and security powered by Cloudflare.</p>
-            <p><strong>View the repository:</strong> <a href="https://github.com/femdiya/femdiya.github.io" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">github.com/femdiya/femdiya.github.io</a></p>
-        </div>
+	<div id="contactSection" class="main-container p-6 rounded-lg w-full max-w-5xl hidden">
+		<div class="flex justify-between items-center mb-6">
+			<h1 class="text-3xl font-bold">Contact Me</h1>
+			<button id="backToGameButton" class="button-primary px-4 py-2 rounded-lg text-sm">Back to Game</button>
+		</div>
+		<div class="text-left space-y-4">
+			<p>Got feedback, questions, or just want to say hi? Reach out below.</p>
+			<p><strong>Email:</strong> <a href="mailto:feedback@mnpl.ir" class="text-blue-500 hover:underline">feedback@mnpl.ir</a></p>
+			<p><strong>Telegram:</strong> <a href="https://t.me/xx_kittyy" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">t.me/xx_kittyy</a></p>
+			<p>I’ll try to respond as soon as I can. Thanks for visiting!</p>
+			<hr class="my-6 border-default">
+			<p>This project is open-source and hosted on GitHub, with performance and security powered by Cloudflare.</p>
+			<p><strong>View the repository:</strong> <a href="https://github.com/femdiya/femdiya.github.io" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">github.com/femdiya/femdiya.github.io</a></p>
+		</div>
     </div>
 
-    <div id="messageModal" class="modal">
-        <div class="modal-content">
-            <div id="highScoreInfoDisplay" class="text-lg text-muted mb-3"></div> 
-            <div id="namePromptContainer" class="hidden my-3">
-                <label for="playerNameInput" class="custom-input-label block">Enter your name (1-12 chars, a-z, 0-9):</label>
-                <input type="text" id="playerNameInput" maxlength="12" class="input-default p-2 text-center w-40 mx-auto block border-default rounded-md shadow-sm">
-                <p id="playerNameError" class="input-error-message mt-2">&nbsp;</p> 
-            </div>
-            <button id="modalCloseButton" class="button-primary px-4 py-2 rounded-lg">OK</button> 
-        </div>
-    </div>
+	<div id="messageModal" class="modal">
+		<div class="modal-content">
+			<div id="highScoreInfoDisplay" class="text-lg text-muted mb-3"></div>
+			<div id="namePromptContainer" class="hidden my-3">
+				<label for="playerNameInput" class="custom-input-label block">Enter your name (1-12 chars, a-z, 0-9):</label>
+				<input type="text" id="playerNameInput" maxlength="12" class="input-default p-2 text-center w-40 mx-auto block border-default rounded-md shadow-sm">
+				<p id="playerNameError" class="input-error-message mt-2">&nbsp;</p>
+			</div>
+			<button id="modalCloseButton" class="button-primary px-4 py-2 rounded-lg">OK</button>
+		</div>
+	</div>
 
-    <div id="reportModal" class="modal">
-        <div class="modal-content">
-            <h2 class="text-xl font-bold mb-3">Game Report</h2>
-            <div class="tabs mb-3 border-b border-default flex">
-                <button id="tabStatsButton" class="tab-button active">Statistics</button>
-                <button id="tabHighScoresButton" class="tab-button">High Scores</button>
-            </div>
-            <div id="statsReportContent" class="report-content text-sm text-left mb-4 overflow-y-auto" style="max-height: 300px;">
-                </div>
-            <div id="highScoresReportContent" class="report-content hidden text-sm text-left mb-4 overflow-y-auto" style="max-height: 300px;">
-                </div>
-            <div class="mt-4 flex justify-between">
-                <button id="resetAllDataButton" class="button-danger px-3 py-1 rounded-md text-xs">Reset All Data</button>
-                <button id="closeReportModalButton" class="button-secondary px-3 py-1 rounded-md text-xs">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="pauseOverlay" class="hidden fixed inset-0 flex justify-center items-center z-50">
-        <div id="pauseOverlayContent">
-            <h2 class="text-3xl font-bold mb-4">Game Paused</h2>
-            <div class="resume-icon text-6xl mb-4">▶️</div>
-            <p class="text-muted text-sm">Click anywhere on this overlay to resume</p>
-        </div>
-    </div>
+	<div id="reportModal" class="modal">
+		<div class="modal-content">
+			<h2 class="text-xl font-bold mb-3">Game Report</h2>
+			<div class="tabs mb-3 border-b border-default flex">
+				<button id="tabStatsButton" class="tab-button active">Statistics</button>
+				<button id="tabHighScoresButton" class="tab-button">High Scores</button>
+			</div>
+			<div id="statsReportContent" class="report-content text-sm text-left mb-4 overflow-y-auto" style="max-height: 300px;">
+				</div>
+			<div id="highScoresReportContent" class="report-content hidden text-sm text-left mb-4 overflow-y-auto" style="max-height: 300px;">
+				</div>
+			<div class="mt-4 flex justify-between">
+				<button id="resetAllDataButton" class="button-danger px-3 py-1 rounded-md text-xs">Reset All Data</button>
+				<button id="closeReportModalButton" class="button-secondary px-3 py-1 rounded-md text-xs">Close</button>
+			</div>
+		</div>
+	</div>
 
-    <script>
-        const BASE_DIFFICULTIES = {
-            easy: { name: 'Easy', rows: 9, cols: 9, mines: 10 },
-            medium: { name: 'Medium', rows: 16, cols: 16, mines: 40 },
-            hard: { name: 'Hard', rows: 16, cols: 30, mines: 99 }
-        };
-        const MARK_NONE = 0, MARK_FLAG = 1, MARK_QUESTION = 2;
-        const SMILEY_NEUTRAL = '🙂', SMILEY_SURPRISED = '😮', SMILEY_WIN = '😎', SMILEY_LOSE = '😵';
-        const SOUND_TYPES = { CLICK: 'click', FLAG: 'flag', UNMARK: 'unmark', EXPLOSION: 'explosion', WIN: 'win', REVEAL_EMPTY: 'reveal_empty', ERROR: 'error' }; 
-        const HIGH_SCORES_KEY = 'minesweeperDeluxeHighScores';
-        const STATS_KEY = 'minesweeperDeluxeStats';
-        const MAX_HIGH_SCORES_PER_DIFFICULTY = 5;
-        const PLAYER_NAME_MAX_LENGTH = 12;
-        const PLAYER_NAME_ALLOWED_REGEX = /^[a-zA-Z0-9]+$/; 
-        
-        const DEFAULT_CELL_SIZE_PX = 30;
-        const MIN_CELL_SIZE_PX = 20;
-        const GAP_SIZE_PX = 2; 
+	<div id="pauseOverlay" class="hidden fixed inset-0 flex justify-center items-center z-50">
+		<div id="pauseOverlayContent">
+			<h2 class="text-3xl font-bold mb-4">Game Paused</h2>
+			<div class="resume-icon text-6xl mb-4">▶️</div>
+			<p class="text-muted text-sm">Click anywhere on this overlay to resume</p>
+		</div>
+	</div>
 
-        let currentDifficulty = JSON.parse(JSON.stringify(BASE_DIFFICULTIES.medium)); 
-        let board = [], revealedCells = 0, flaggedMines = 0;
-        let gameOver = false, gameWon = false, isPaused = false;
-        let timerInterval, seconds = 0, firstClick = true, isMousePressedOnCell = false;
-        let audioContext, isMuted = localStorage.getItem('minesweeperMuted') === 'true';
-        let currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
+	<script>
+		const BASE_DIFFICULTIES = {
+			easy: { name: 'Easy', rows: 9, cols: 9, mines: 10 },
+			medium: { name: 'Medium', rows: 16, cols: 16, mines: 40 },
+			hard: { name: 'Hard', rows: 16, cols: 30, mines: 99 }
+		};
+		const MARK_NONE = 0, MARK_FLAG = 1, MARK_QUESTION = 2;
+		const SMILEY_NEUTRAL = '🙂', SMILEY_SURPRISED = '😮', SMILEY_WIN = '😎', SMILEY_LOSE = '😵';
+		const SOUND_TYPES = { CLICK: 'click', FLAG: 'flag', UNMARK: 'unmark', EXPLOSION: 'explosion', WIN: 'win', REVEAL_EMPTY: 'reveal_empty', ERROR: 'error' };
+		const HIGH_SCORES_KEY = 'minesweeperDeluxeHighScores';
+		const STATS_KEY = 'minesweeperDeluxeStats';
+		const MAX_HIGH_SCORES_PER_DIFFICULTY = 5;
+		const PLAYER_NAME_MAX_LENGTH = 12;
+		const PLAYER_NAME_ALLOWED_REGEX = /^[a-zA-Z0-9]+$/;
 
-        let DOMElements; 
+		const DEFAULT_CELL_SIZE_PX = 30;
+		const MIN_CELL_SIZE_PX = 20;
+		const GAP_SIZE_PX = 2;
 
-        function initAudio() { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.warn("Web Audio API not supported."); } updateMuteButtonVisual(); }
-        function playSound(type) { 
-            if (isMuted || !audioContext) return;
-            const o = audioContext.createOscillator(), g = audioContext.createGain();
-            o.connect(g); g.connect(audioContext.destination); g.gain.setValueAtTime(0.08, audioContext.currentTime);
-            let dur = 0.1, freq = 800, wave = 'triangle';
-            if (type === SOUND_TYPES.FLAG) { freq = 600; wave = 'sine'; dur = 0.08; }
-            else if (type === SOUND_TYPES.UNMARK) { freq = 400; wave = 'sine'; dur = 0.08; }
-            else if (type === SOUND_TYPES.EXPLOSION) { freq = 100; wave = 'sawtooth'; dur = 0.5; g.gain.setValueAtTime(0.15, audioContext.currentTime); }
-            else if (type === SOUND_TYPES.WIN) { freq = 1000; wave = 'square'; dur = 0.15; setTimeout(() => { if(isMuted || !audioContext) return; const o2=audioContext.createOscillator(),g2=audioContext.createGain(); o2.connect(g2);g2.connect(audioContext.destination);g2.gain.setValueAtTime(0.08,audioContext.currentTime);o2.type='square';o2.frequency.setValueAtTime(1200,audioContext.currentTime);g2.gain.exponentialRampToValueAtTime(1e-5,audioContext.currentTime+0.2);o2.start();o2.stop(audioContext.currentTime+0.2);},100); }
-            else if (type === SOUND_TYPES.REVEAL_EMPTY) { freq = 1200; wave = 'sine'; dur = 0.1; }
-            else if (type === SOUND_TYPES.ERROR) { freq = 200; wave = 'square'; dur = 0.15; g.gain.setValueAtTime(0.05, audioContext.currentTime); } 
-            o.type = wave; o.frequency.setValueAtTime(freq, audioContext.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + dur);
-            o.start(); o.stop(audioContext.currentTime + dur);
-        }
-        function toggleMute() { isMuted = !isMuted; localStorage.setItem('minesweeperMuted', isMuted); updateMuteButtonVisual(); }
-        function updateMuteButtonVisual() { if(DOMElements && DOMElements.muteButton) DOMElements.muteButton.textContent = isMuted ? '🔇' : '🔊'; }
+		let currentDifficulty = JSON.parse(JSON.stringify(BASE_DIFFICULTIES.medium));
+		let board = [], revealedCells = 0, flaggedMines = 0;
+		let gameOver = false, gameWon = false, isPaused = false;
+		let timerInterval, seconds = 0, firstClick = true, isMousePressedOnCell = false;
+		let audioContext, isMuted = localStorage.getItem('minesweeperMuted') === 'true';
+		let currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
+		let DOMElements;
 
-        function applyTheme(themeName) { document.body.className = 'theme-' + themeName + " flex flex-col items-center justify-center min-h-screen p-4"; localStorage.setItem('minesweeperTheme', themeName); if (DOMElements && DOMElements.themeSelector && DOMElements.themeSelector.value !== themeName) DOMElements.themeSelector.value = themeName; }
-        function loadTheme() { const savedTheme = localStorage.getItem('minesweeperTheme') || 'classic'; applyTheme(savedTheme); }
+		function initAudio() { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.warn("Web Audio API not supported."); } updateMuteButtonVisual(); }
+		function playSound(type) {
+			if (isMuted || !audioContext) return;
+			const o = audioContext.createOscillator(), g = audioContext.createGain();
+			o.connect(g); g.connect(audioContext.destination); g.gain.setValueAtTime(0.08, audioContext.currentTime);
+			let dur = 0.1, freq = 800, wave = 'triangle';
+			if (type === SOUND_TYPES.FLAG) { freq = 600; wave = 'sine'; dur = 0.08; }
+			else if (type === SOUND_TYPES.UNMARK) { freq = 400; wave = 'sine'; dur = 0.08; }
+			else if (type === SOUND_TYPES.EXPLOSION) { freq = 100; wave = 'sawtooth'; dur = 0.5; g.gain.setValueAtTime(0.15, audioContext.currentTime); }
+			else if (type === SOUND_TYPES.WIN) { freq = 1000; wave = 'square'; dur = 0.15; setTimeout(() => { if(isMuted || !audioContext) return; const o2=audioContext.createOscillator(),g2=audioContext.createGain(); o2.connect(g2);g2.connect(audioContext.destination);g2.gain.setValueAtTime(0.08,audioContext.currentTime);o2.type='square';o2.frequency.setValueAtTime(1200,audioContext.currentTime);g2.gain.exponentialRampToValueAtTime(1e-5,audioContext.currentTime+0.2);o2.start();o2.stop(audioContext.currentTime+0.2);},100); }
+			else if (type === SOUND_TYPES.REVEAL_EMPTY) { freq = 1200; wave = 'sine'; dur = 0.1; }
+			else if (type === SOUND_TYPES.ERROR) { freq = 200; wave = 'square'; dur = 0.15; g.gain.setValueAtTime(0.05, audioContext.currentTime); }
+			o.type = wave; o.frequency.setValueAtTime(freq, audioContext.currentTime);
+			g.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + dur);
+			o.start(); o.stop(audioContext.currentTime + dur);
+		}
+		function toggleMute() { isMuted = !isMuted; localStorage.setItem('minesweeperMuted', isMuted); updateMuteButtonVisual(); }
+		function updateMuteButtonVisual() { if(DOMElements && DOMElements.muteButton) DOMElements.muteButton.textContent = isMuted ? '🔇' : '🔊'; }
 
-        function getStoredData(key, defaultValue = {}) { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
-        function saveStoredData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+		function applyTheme(themeName) { document.body.className = 'theme-' + themeName + " flex flex-col items-center justify-center min-h-screen p-4"; localStorage.setItem('minesweeperTheme', themeName); if (DOMElements && DOMElements.themeSelector && DOMElements.themeSelector.value !== themeName) DOMElements.themeSelector.value = themeName; }
+		function loadTheme() { const savedTheme = localStorage.getItem('minesweeperTheme') || 'classic'; applyTheme(savedTheme); }
 
-        function updateHighScore(difficultyKey, time, name) {
-            const scores = getStoredData(HIGH_SCORES_KEY, {});
-            if (!scores[difficultyKey]) scores[difficultyKey] = [];
-            scores[difficultyKey].push({ name, time });
-            scores[difficultyKey].sort((a, b) => a.time - b.time);
-            scores[difficultyKey] = scores[difficultyKey].slice(0, MAX_HIGH_SCORES_PER_DIFFICULTY);
-            saveStoredData(HIGH_SCORES_KEY, scores);
-            return scores[difficultyKey].some(s => s.name === name && s.time === time); 
-        }
-        function populateHighScoresContent() {
-            const scores = getStoredData(HIGH_SCORES_KEY, {});
-            let html = '';
-            for (const key of ['easy', 'medium', 'hard']) { 
-                const diffName = BASE_DIFFICULTIES[key]?.name || key.charAt(0).toUpperCase() + key.slice(1);
-                html += `<h3 class="font-semibold mt-2 text-md">${diffName}</h3>`;
-                if (scores[key] && scores[key].length > 0) {
-                    html += '<ol class="list-decimal list-inside ml-4">'; 
-                    scores[key].forEach(s => { html += `<li>${s.name} - ${s.time}s</li>`; });
-                    html += '</ol>';
-                } else { html += '<p class="text-xs text-muted ml-4">No scores yet.</p>'; } 
-            }
-            DOMElements.reportModal.highScoresContent.innerHTML = html;
-        }
-        function getInitialStats() {
-            const difficulties = ['easy', 'medium', 'hard', 'custom', 'overall'];
-            const initial = {};
-            difficulties.forEach(d => {
-                initial[d] = { played: 0, won: 0, currentStreak: 0, maxStreak: 0, bestTime: (d !== 'custom' && d !== 'overall') ? Infinity : undefined };
-            });
-            return initial; 
-        }
-        function updateStats(isWin) {
-            const stats = getStoredData(STATS_KEY, getInitialStats());
-            const diffKeyForStats = currentDifficulty.name === `Custom` ? 'custom' : (Object.keys(BASE_DIFFICULTIES).find(k=>BASE_DIFFICULTIES[k].name === currentDifficulty.name) || 'custom');
-            function updateSingleStatSet(statSet, currentSeconds, isGameWin) {
-                statSet.played = (statSet.played || 0) + 1;
-                if (isGameWin) {
-                    statSet.won = (statSet.won || 0) + 1;
-                    statSet.currentStreak = (statSet.currentStreak || 0) + 1;
-                    if (statSet.currentStreak > (statSet.maxStreak || 0)) {
-                        statSet.maxStreak = statSet.currentStreak;
-                    }
-                    if (statSet.bestTime !== undefined && statSet.bestTime !== null && currentSeconds < statSet.bestTime ) { 
-                         if (diffKeyForStats !== 'custom' && diffKeyForStats !== 'overall') { 
-                            statSet.bestTime = currentSeconds;
-                        }
-                    }
-                } else { 
-                    statSet.currentStreak = 0;
-                }
-            }
-            if(stats[diffKeyForStats]) updateSingleStatSet(stats[diffKeyForStats], seconds, isWin);
-            if(stats.overall) updateSingleStatSet(stats.overall, seconds, isWin); 
-            
-            saveStoredData(STATS_KEY, stats);
-        }
-        function populateStatsContent() {
-            const stats = getStoredData(STATS_KEY, getInitialStats()); 
-            let html = '<table><thead><tr><th>Difficulty</th><th>Played</th><th>Won</th><th>Win %</th><th>Streak (Current/Max)</th><th>Best Time</th></tr></thead><tbody>';
-            const difficultiesToDisplay = ['easy', 'medium', 'hard', 'custom', 'overall'];
-            difficultiesToDisplay.forEach(key => {
-                const s = stats[key] || { played: 0, won: 0, currentStreak: 0, maxStreak: 0, bestTime: Infinity };
-                const diffName = BASE_DIFFICULTIES[key]?.name || key.charAt(0).toUpperCase() + key.slice(1);
-                const winPercent = s.played > 0 ? ((s.won / s.played) * 100).toFixed(1) + '%' : 'N/A';
-                let bestTimeDisplay = 'N/A';
-                if (key !== 'custom' && key !== 'overall' && s.bestTime !== Infinity && s.bestTime !== undefined && s.bestTime !== null) {
-                    bestTimeDisplay = s.bestTime + 's';
-                }
-                html += `<tr><td>${diffName}</td><td>${s.played}</td><td>${s.won}</td><td>${winPercent}</td><td>${s.currentStreak}/${s.maxStreak}</td><td>${bestTimeDisplay}</td></tr>`;
-            });
-            html += '</tbody></table>';
-            DOMElements.reportModal.statsContent.innerHTML = html;
-        }
-        function resetAllData() { 
-            if (window.confirm("Are you sure you want to reset ALL game data (Statistics and High Scores)? This cannot be undone.")) {
-                saveStoredData(STATS_KEY, getInitialStats()); 
-                saveStoredData(HIGH_SCORES_KEY, {}); 
-                populateStatsContent(); 
-                populateHighScoresContent(); 
-            }
-        }
-        function showReportModal(defaultTab = 'stats') {
-            populateStatsContent();
-            populateHighScoresContent();
-            if (defaultTab === 'stats') {
-                DOMElements.reportModal.statsContent.classList.remove('hidden');
-                DOMElements.reportModal.highScoresContent.classList.add('hidden');
-                DOMElements.reportModal.tabStatsButton.classList.add('active');
-                DOMElements.reportModal.tabHighScoresButton.classList.remove('active');
-            } else {
-                DOMElements.reportModal.statsContent.classList.add('hidden');
-                DOMElements.reportModal.highScoresContent.classList.remove('hidden');
-                DOMElements.reportModal.tabStatsButton.classList.remove('active');
-                DOMElements.reportModal.tabHighScoresButton.classList.add('active');
-            }
-            DOMElements.reportModal.modal.style.display = 'flex';
-        }
+		function getStoredData(key, defaultValue = {}) { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
+		function saveStoredData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-        function togglePauseGame() {
-            if (DOMElements.customErrorOverlay && !DOMElements.customErrorOverlay.classList.contains('hidden')) return;
+		function updateHighScore(difficultyKey, time, name) {
+			const scores = getStoredData(HIGH_SCORES_KEY, {});
+			if (!scores[difficultyKey]) scores[difficultyKey] = [];
+			scores[difficultyKey].push({ name, time });
+			scores[difficultyKey].sort((a, b) => a.time - b.time);
+			scores[difficultyKey] = scores[difficultyKey].slice(0, MAX_HIGH_SCORES_PER_DIFFICULTY);
+			saveStoredData(HIGH_SCORES_KEY, scores);
+			return scores[difficultyKey].some(s => s.name === name && s.time === time);
+		}
+		function populateHighScoresContent() {
+			const scores = getStoredData(HIGH_SCORES_KEY, {});
+			let html = '';
+			for (const key of ['easy', 'medium', 'hard']) {
+				const diffName = BASE_DIFFICULTIES[key]?.name || key.charAt(0).toUpperCase() + key.slice(1);
+				html += `<h3 class="font-semibold mt-2 text-md">${diffName}</h3>`;
+				if (scores[key] && scores[key].length > 0) {
+					html += '<ol class="list-decimal list-inside ml-4">';
+					scores[key].forEach(s => { html += `<li>${s.name} - ${s.time}s</li>`; });
+					html += '</ol>';
+				} else { html += '<p class="text-xs text-muted ml-4">No scores yet.</p>'; }
+			}
+			DOMElements.reportModal.highScoresContent.innerHTML = html;
+		}
 
-            if (gameOver && !gameWon && !isPaused) return; 
-            if (gameOver && !gameWon && isPaused) return; 
+		function getInitialStats() {
+			const difficulties = ['easy', 'medium', 'hard', 'custom', 'overall'];
+			const initial = {};
+			difficulties.forEach(d => {
+				initial[d] = { played: 0, won: 0, currentStreak: 0, maxStreak: 0, bestTime: (d !== 'custom' && d !== 'overall') ? Infinity : undefined };
+			});
+			return initial;
+		}
+		function updateStats(isWin) {
+			const stats = getStoredData(STATS_KEY, getInitialStats());
+			const diffKeyForStats = currentDifficulty.name === `Custom` ? 'custom' : (Object.keys(BASE_DIFFICULTIES).find(k=>BASE_DIFFICULTIES[k].name === currentDifficulty.name) || 'custom');
+			function updateSingleStatSet(statSet, currentSeconds, isGameWin) {
+				statSet.played = (statSet.played || 0) + 1;
+				if (isGameWin) {
+					statSet.won = (statSet.won || 0) + 1;
+					statSet.currentStreak = (statSet.currentStreak || 0) + 1;
+					if (statSet.currentStreak > (statSet.maxStreak || 0)) {
+						statSet.maxStreak = statSet.currentStreak;
+					}
+					if (statSet.bestTime !== undefined && statSet.bestTime !== null && currentSeconds < statSet.bestTime ) {
+							if (diffKeyForStats !== 'custom' && diffKeyForStats !== 'overall') {
+							statSet.bestTime = currentSeconds;
+						}
+					}
+				} else {
+					statSet.currentStreak = 0;
+				}
+			}
+			if(stats[diffKeyForStats]) updateSingleStatSet(stats[diffKeyForStats], seconds, isWin);
+			if(stats.overall) updateSingleStatSet(stats.overall, seconds, isWin);
 
-            isPaused = !isPaused;
-            if (isPaused) {
-                if(timerInterval) clearInterval(timerInterval);
-                DOMElements.pauseOverlay.style.display = 'flex';
-                document.body.classList.add('game-paused');
-            } else {
-                DOMElements.pauseOverlay.style.display = 'none';
-                document.body.classList.remove('game-paused');
-                if ((!gameOver || gameWon) && !firstClick) { 
-                    startTimer(true); 
-                }
-            }
-        }
+			saveStoredData(STATS_KEY, stats);
+		}
+		function populateStatsContent() {
+			const stats = getStoredData(STATS_KEY, getInitialStats());
+			let html = '<table><thead><tr><th>Difficulty</th><th>Played</th><th>Won</th><th>Win %</th><th>Streak (Current/Max)</th><th>Best Time</th></tr></thead><tbody>';
+			const difficultiesToDisplay = ['easy', 'medium', 'hard', 'custom', 'overall'];
+			difficultiesToDisplay.forEach(key => {
+				const s = stats[key] || { played: 0, won: 0, currentStreak: 0, maxStreak: 0, bestTime: Infinity };
+				const diffName = BASE_DIFFICULTIES[key]?.name || key.charAt(0).toUpperCase() + key.slice(1);
+				const winPercent = s.played > 0 ? ((s.won / s.played) * 100).toFixed(1) + '%' : 'N/A';
+				let bestTimeDisplay = 'N/A';
+				if (key !== 'custom' && key !== 'overall' && s.bestTime !== Infinity && s.bestTime !== undefined && s.bestTime !== null) {
+					bestTimeDisplay = s.bestTime + 's';
+				}
+				html += `<tr><td>${diffName}</td><td>${s.played}</td><td>${s.won}</td><td>${winPercent}</td><td>${s.currentStreak}/${s.maxStreak}</td><td>${bestTimeDisplay}</td></tr>`;
+			});
+			html += '</tbody></table>';
+			DOMElements.reportModal.statsContent.innerHTML = html;
+		}
+		function resetAllData() {
+			if (window.confirm("Are you sure you want to reset ALL game data (Statistics and High Scores)? This cannot be undone.")) {
+				saveStoredData(STATS_KEY, getInitialStats());
+				saveStoredData(HIGH_SCORES_KEY, {});
+				populateStatsContent();
+				populateHighScoresContent();
+			}
+		}
+		function showReportModal(defaultTab = 'stats') {
+			populateStatsContent();
+			populateHighScoresContent();
+			if (defaultTab === 'stats') {
+				DOMElements.reportModal.statsContent.classList.remove('hidden');
+				DOMElements.reportModal.highScoresContent.classList.add('hidden');
+				DOMElements.reportModal.tabStatsButton.classList.add('active');
+				DOMElements.reportModal.tabHighScoresButton.classList.remove('active');
+			} else {
+				DOMElements.reportModal.statsContent.classList.add('hidden');
+				DOMElements.reportModal.highScoresContent.classList.remove('hidden');
+				DOMElements.reportModal.tabStatsButton.classList.remove('active');
+				DOMElements.reportModal.tabHighScoresButton.classList.add('active');
+			}
+			DOMElements.reportModal.modal.style.display = 'flex';
+		}
 
-        function determineDynamicCellSize() {
-            if (!DOMElements || !DOMElements.gameBoard || !DOMElements.gameBoard.parentElement) {
-                currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
-                return;
-            }
-            const wrapper = DOMElements.gameBoard.parentElement;
-            const wrapperWidth = wrapper.clientWidth - (GAP_SIZE_PX * 2); 
-            const cols = currentDifficulty.cols;
+		function togglePauseGame() {
+			if (DOMElements.customErrorOverlay && !DOMElements.customErrorOverlay.classList.contains('hidden')) return;
 
-            const widthWithDefaultCells = cols * DEFAULT_CELL_SIZE_PX + (cols > 0 ? (cols - 1) * GAP_SIZE_PX : 0);
+			if (gameOver && !gameWon && !isPaused) return;
+			if (gameOver && !gameWon && isPaused) return;
 
-            if (wrapperWidth <= 0) { 
-                currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
-                return;
-            }
+			isPaused = !isPaused;
+			if (isPaused) {
+				if(timerInterval) clearInterval(timerInterval);
+				DOMElements.pauseOverlay.style.display = 'flex';
+				document.body.classList.add('game-paused');
+			} else {
+				DOMElements.pauseOverlay.style.display = 'none';
+				document.body.classList.remove('game-paused');
+				if ((!gameOver || gameWon) && !firstClick) {
+					startTimer(true);
+				}
+			}
+		}
 
-            if (widthWithDefaultCells > wrapperWidth) {
-                const availableWidthForCells = wrapperWidth - (cols > 0 ? (cols - 1) * GAP_SIZE_PX : 0);
-                let newCellSize = Math.floor(availableWidthForCells / cols);
-                currentDynamicCellSize = Math.max(MIN_CELL_SIZE_PX, newCellSize);
-            } else {
-                currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
-            }
-        }
+		function determineDynamicCellSize() {
+			if (!DOMElements || !DOMElements.gameBoard || !DOMElements.gameBoard.parentElement) {
+				currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
+				return;
+			}
+			const wrapper = DOMElements.gameBoard.parentElement;
+			const wrapperWidth = wrapper.clientWidth - (GAP_SIZE_PX * 2);
+			const cols = currentDifficulty.cols;
+			const widthWithDefaultCells = cols * DEFAULT_CELL_SIZE_PX + (cols > 0 ? (cols - 1) * GAP_SIZE_PX : 0);
 
-        function showCustomInputErrorOverlay(show) {
-            if (DOMElements.customErrorOverlay) {
-                DOMElements.customErrorOverlay.style.display = show ? 'flex' : 'none';
-                if (show) {
-                    DOMElements.gameBoard.classList.add('custom-input-error-active'); 
-                } else {
-                    DOMElements.gameBoard.classList.remove('custom-input-error-active');
-                }
-            }
-        }
-        
-        function validateAllCustomInputs() { 
-            let allValid = true;
-            
-            const rowsInput = DOMElements.customInputs.rows;
-            const colsInput = DOMElements.customInputs.cols;
-            const minesInput = DOMElements.customInputs.mines;
+			if (wrapperWidth <= 0) {
+				currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
+				return;
+			}
 
-            const rowsValue = parseInt(rowsInput.value);
-            const colsValue = parseInt(colsInput.value);
-            const minesValue = parseInt(minesInput.value);
+			if (widthWithDefaultCells > wrapperWidth) {
+				const availableWidthForCells = wrapperWidth - (cols > 0 ? (cols - 1) * GAP_SIZE_PX : 0);
+				let newCellSize = Math.floor(availableWidthForCells / cols);
+				currentDynamicCellSize = Math.max(MIN_CELL_SIZE_PX, newCellSize);
+			} else {
+				currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
+			}
+		}
 
-            if (isNaN(rowsValue) || rowsValue < 5 || rowsValue > 100) allValid = false;
-            if (isNaN(colsValue) || colsValue < 5 || colsValue > 100) allValid = false;
-            if (isNaN(minesValue) || minesValue < 10) allValid = false;
-            
-            if (!isNaN(rowsValue) && !isNaN(colsValue) && !isNaN(minesValue) && 
-                rowsValue >= 5 && rowsValue <= 100 && 
-                colsValue >= 5 && colsValue <= 100 &&
-                minesValue >= 10) {
-                const maxPossibleMines = (rowsValue * colsValue) - 9;
-                if (minesValue > maxPossibleMines) allValid = false;
-            }
-            
-            if (!allValid && DOMElements.customInputs.container.classList.contains('flex')) {
-                 playSound(SOUND_TYPES.ERROR); 
-            }
-            return allValid;
-        }
+		function showCustomInputErrorOverlay(show) {
+			if (DOMElements.customErrorOverlay) {
+				DOMElements.customErrorOverlay.style.display = show ? 'flex' : 'none';
+				if (show) {
+					DOMElements.gameBoard.classList.add('custom-input-error-active');
+				} else {
+					DOMElements.gameBoard.classList.remove('custom-input-error-active');
+				}
+			}
+		}
 
-        function startGame() {
-            const selectedDifficultyValue = DOMElements.difficultySelect.value;
-            showCustomInputErrorOverlay(false); 
+		function validateAllCustomInputs() {
+			let allValid = true;
 
-            if (selectedDifficultyValue === 'custom') {
-                DOMElements.customInputs.container.classList.remove('hidden');
-                DOMElements.customInputs.container.classList.add('flex');
-                
-                if (!validateAllCustomInputs()) { 
-                    showCustomInputErrorOverlay(true); 
-                    DOMElements.minesCount.textContent = "---";
-                    DOMElements.timer.textContent = "---";
-                    updateSmileyFace(SMILEY_NEUTRAL);
-                    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-                    firstClick = true; 
-                    gameOver = true; 
-                    gameWon = false;
-                    revealedCells = 0;
-                    flaggedMines = 0;
-                    return; 
-                }
-                const rows = parseInt(DOMElements.customInputs.rows.value);
-                const cols = parseInt(DOMElements.customInputs.cols.value);
-                const mines = parseInt(DOMElements.customInputs.mines.value);
-                currentDifficulty = { name: `Custom`, rows: rows, cols: cols, mines: mines };
+			const rowsInput = DOMElements.customInputs.rows;
+			const colsInput = DOMElements.customInputs.cols;
+			const minesInput = DOMElements.customInputs.mines;
 
-            } else { 
-                currentDifficulty = JSON.parse(JSON.stringify(BASE_DIFFICULTIES[selectedDifficultyValue]));
-                DOMElements.customInputs.container.classList.add('hidden');
-                DOMElements.customInputs.container.classList.remove('flex');
-            }
+			const rowsValue = parseInt(rowsInput.value);
+			const colsValue = parseInt(colsInput.value);
+			const minesValue = parseInt(minesInput.value);
 
-            gameOver = false; gameWon = false; firstClick = true; isPaused = false;
-            revealedCells = 0; flaggedMines = 0; seconds = 0;
-            isMousePressedOnCell = false;
-            board = [];
-            
-            DOMElements.minesCount.textContent = currentDifficulty.mines;
-            DOMElements.timer.textContent = '0s';
-            updateSmileyFace(SMILEY_NEUTRAL);
-            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-            DOMElements.messageModal.modal.style.display = "none"; 
-            DOMElements.messageModal.highScoreInfo.textContent = '';
-            DOMElements.messageModal.namePromptContainer.classList.add('hidden');
-            DOMElements.pauseOverlay.style.display = 'none'; 
-            document.body.classList.remove('game-paused'); 
-            DOMElements.pauseButton.textContent = '⏸️';
+			if (isNaN(rowsValue) || rowsValue < 5 || rowsValue > 100) allValid = false;
+			if (isNaN(colsValue) || colsValue < 5 || colsValue > 100) allValid = false;
+			if (isNaN(minesValue) || minesValue < 10) allValid = false;
 
-            createBoard();
-            renderBoard(); 
-        }
+			if (!isNaN(rowsValue) && !isNaN(colsValue) && !isNaN(minesValue) &&
+				rowsValue >= 5 && rowsValue <= 100 &&
+				colsValue >= 5 && colsValue <= 100 &&
+				minesValue >= 10) {
+				const maxPossibleMines = (rowsValue * colsValue) - 9;
+				if (minesValue > maxPossibleMines) allValid = false;
+			}
 
-        function createBoard() { 
-            board = [];
-            for (let r = 0; r < currentDifficulty.rows; r++) {
-                const row = [];
-                for (let c = 0; c < currentDifficulty.cols; c++) {
-                    row.push({ isMine: false, isRevealed: false, markState: MARK_NONE, adjacentMines: 0, row: r, col: c, detonated: false, isMisflagged: false });
-                }
-                board.push(row);
-            }
-        }
-        function updateSmileyFace(face) { 
-            if (DOMElements && DOMElements.smiley) { 
-                DOMElements.smiley.textContent = face; 
-            }
-        }
+			if (!allValid && DOMElements.customInputs.container.classList.contains('flex')) {
+				playSound(SOUND_TYPES.ERROR);
+			}
+			return allValid;
+		}
 
-        function placeMines(initialRow, initialCol) {
-            const safeZoneRadius = 1; 
-            let minesPlaced = 0;
-            while (minesPlaced < currentDifficulty.mines) {
-                const r = Math.floor(Math.random() * currentDifficulty.rows);
-                const c = Math.floor(Math.random() * currentDifficulty.cols);
-                
-                const isProtected = Math.abs(r - initialRow) <= safeZoneRadius &&
-                                    Math.abs(c - initialCol) <= safeZoneRadius;
+		function startGame() {
+			const selectedDifficultyValue = DOMElements.difficultySelect.value;
+			showCustomInputErrorOverlay(false);
 
-                if (isProtected) continue; 
-                
-                if (!board[r][c].isMine) {
-                    board[r][c].isMine = true;
-                    minesPlaced++;
-                }
-            }
-            calculateAdjacentMines();
-        }
-        function calculateAdjacentMines() { 
-            for (let r = 0; r < currentDifficulty.rows; r++) {
-                for (let c = 0; c < currentDifficulty.cols; c++) {
-                    if (board[r][c].isMine) continue;
-                    let count = 0;
-                    for (let dr = -1; dr <= 1; dr++) {
-                        for (let dc = -1; dc <= 1; dc++) {
-                            if (dr === 0 && dc === 0) continue;
-                            const nr = r + dr; const nc = c + dc;
-                            if (isValidCell(nr, nc) && board[nr][nc].isMine) count++;
-                        }
-                    }
-                    board[r][c].adjacentMines = count;
-                }
-            }
-        }
+			if (selectedDifficultyValue === 'custom') {
+				DOMElements.customInputs.container.classList.remove('hidden');
+				DOMElements.customInputs.container.classList.add('flex');
 
-        function renderBoard() {
-            if (DOMElements.customErrorOverlay && DOMElements.customErrorOverlay.style.display === 'flex') return;
+				if (!validateAllCustomInputs()) {
+					showCustomInputErrorOverlay(true);
+					DOMElements.minesCount.textContent = "---";
+					DOMElements.timer.textContent = "---";
+					updateSmileyFace(SMILEY_NEUTRAL);
+					if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+					firstClick = true;
+					gameOver = true;
+					gameWon = false;
+					revealedCells = 0;
+					flaggedMines = 0;
+					return;
+				}
+				const rows = parseInt(DOMElements.customInputs.rows.value);
+				const cols = parseInt(DOMElements.customInputs.cols.value);
+				const mines = parseInt(DOMElements.customInputs.mines.value);
+				currentDifficulty = { name: `Custom`, rows: rows, cols: cols, mines: mines };
 
-            determineDynamicCellSize(); 
-            DOMElements.gameBoard.innerHTML = '';
-            DOMElements.gameBoard.style.gridTemplateColumns = `repeat(${currentDifficulty.cols}, 1fr)`;
-            
-            DOMElements.gameBoard.style.width = `${currentDifficulty.cols * currentDynamicCellSize + (currentDifficulty.cols > 0 ? (currentDifficulty.cols - 1) * GAP_SIZE_PX : 0)}px`;
+			} else {
+				currentDifficulty = JSON.parse(JSON.stringify(BASE_DIFFICULTIES[selectedDifficultyValue]));
+				DOMElements.customInputs.container.classList.add('hidden');
+				DOMElements.customInputs.container.classList.remove('flex');
+			}
 
-            for (let r = 0; r < currentDifficulty.rows; r++) {
-                for (let c = 0; c < currentDifficulty.cols; c++) {
-                    const cellElement = document.createElement('div');
-                    const cellData = board[r][c];
-                    cellElement.className = 'cell'; 
-                    cellElement.dataset.row = r; cellElement.dataset.col = c;
+			gameOver = false; gameWon = false; firstClick = true; isPaused = false;
+			revealedCells = 0; flaggedMines = 0; seconds = 0;
+			isMousePressedOnCell = false;
+			board = [];
 
-                    cellElement.style.width = `${currentDynamicCellSize}px`;
-                    cellElement.style.height = `${currentDynamicCellSize}px`;
-                    cellElement.style.fontSize = `${Math.max(9, Math.floor(currentDynamicCellSize * 0.5))}px`;
+			DOMElements.minesCount.textContent = currentDifficulty.mines;
+			DOMElements.timer.textContent = '0s';
+			updateSmileyFace(SMILEY_NEUTRAL);
+			if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+			DOMElements.messageModal.modal.style.display = "none";
+			DOMElements.messageModal.highScoreInfo.textContent = '';
+			DOMElements.messageModal.namePromptContainer.classList.add('hidden');
+			DOMElements.pauseOverlay.style.display = 'none';
+			document.body.classList.remove('game-paused');
+			DOMElements.pauseButton.textContent = '⏸️';
 
-                    if (cellData.isRevealed) {
-                        cellElement.classList.add('revealed');
-                        if (cellData.isMine) {
-                            cellElement.classList.add('mine');
-                            if (cellData.detonated) cellElement.classList.add('mine-detonated');
-                            cellElement.textContent = '💣';
-                        } else if (cellData.isMisflagged) { 
-                            cellElement.classList.add('misflagged');
-                            cellElement.textContent = '❌';
-                        } else if (cellData.adjacentMines > 0) {
-                            cellElement.textContent = cellData.adjacentMines;
-                            cellElement.classList.add(`cell-${cellData.adjacentMines}`);
-                        } 
-                    } else { 
-                        if (cellData.markState === MARK_FLAG) {
-                            cellElement.classList.add('flagged');
-                            cellElement.textContent = '🚩';
-                        } else if (cellData.markState === MARK_QUESTION) {
-                            cellElement.classList.add('question');
-                            cellElement.textContent = '❓';
-                        }
-                    }
+			createBoard();
+			renderBoard();
+		}
 
-                    cellElement.addEventListener('click', () => { if (!isPaused && !gameOver) handleCellClick(r, c); });
-                    cellElement.addEventListener('contextmenu', (e) => { e.preventDefault(); if (!isPaused && !gameOver) handleCellRightClick(r, c); });
-                    cellElement.addEventListener('mousedown', (event) => {
-                        if (isPaused || gameOver || (DOMElements.customErrorOverlay && DOMElements.customErrorOverlay.style.display === 'flex') ) return;
-                        if ((event.button === 0 || event.button === 1) && !cellData.isRevealed && cellData.markState === MARK_NONE) {
-                             isMousePressedOnCell = true; updateSmileyFace(SMILEY_SURPRISED);
-                        }
-                        if (event.button === 1) { event.preventDefault(); handleMiddleClickChord(r, c); }
-                    });
-                    DOMElements.gameBoard.appendChild(cellElement);
-                }
-            }
-        }
+		function createBoard() {
+			board = [];
+			for (let r = 0; r < currentDifficulty.rows; r++) {
+				const row = [];
+				for (let c = 0; c < currentDifficulty.cols; c++) {
+					row.push({ isMine: false, isRevealed: false, markState: MARK_NONE, adjacentMines: 0, row: r, col: c, detonated: false, isMisflagged: false });
+				}
+				board.push(row);
+			}
+		}
+		function updateSmileyFace(face) {
+			if (DOMElements && DOMElements.smiley) {
+				DOMElements.smiley.textContent = face;
+			}
+		}
 
-        function handleCellClick(r, c) { 
-            const cell = board[r][c];
-            if (gameOver || cell.isRevealed || cell.markState !== MARK_NONE) { 
-                if (isMousePressedOnCell) { isMousePressedOnCell = false; if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); }
-                return;
-            }
-            isMousePressedOnCell = false; 
+		function placeMines(initialRow, initialCol) {
+			const safeZoneRadius = 1;
+			let minesPlaced = 0;
+			while (minesPlaced < currentDifficulty.mines) {
+				const r = Math.floor(Math.random() * currentDifficulty.rows);
+				const c = Math.floor(Math.random() * currentDifficulty.cols);
 
-            if (firstClick) { 
-                placeMines(r, c); 
-                firstClick = false; 
-                startTimer();     
-            }
-            cell.isRevealed = true;
-            
-            if (cell.isMine) {
-                playSound(SOUND_TYPES.EXPLOSION);
-                cell.detonated = true; 
-                revealAllMines(r,c); 
-                showGameOverMessage(false); 
-                return;
-            }
-            revealedCells++; playSound(SOUND_TYPES.CLICK);
-            if (cell.adjacentMines === 0) { revealAdjacentCells(r, c); playSound(SOUND_TYPES.REVEAL_EMPTY); }
-            renderBoard(); checkWinCondition();
-            if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); 
-        }
-        function handleCellRightClick(r, c) { 
-            if (gameOver || board[r][c].isRevealed) return;
-            const cell = board[r][c];
-            if (cell.markState === MARK_NONE) { cell.markState = MARK_FLAG; flaggedMines++; playSound(SOUND_TYPES.FLAG); }
-            else if (cell.markState === MARK_FLAG) { cell.markState = MARK_QUESTION; flaggedMines--; playSound(SOUND_TYPES.UNMARK); }
-            else if (cell.markState === MARK_QUESTION) { cell.markState = MARK_NONE; playSound(SOUND_TYPES.UNMARK); }
-            DOMElements.minesCount.textContent = currentDifficulty.mines - flaggedMines;
-            renderBoard();
-        }
-        function handleMiddleClickChord(r, c) { 
-            if (gameOver) return;
-            isMousePressedOnCell = false; 
-            const cellData = board[r][c];
-            if (!cellData.isRevealed || cellData.adjacentMines === 0 || cellData.isMine) {
-                 if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); return;
-            }
-            let adjacentFlags = 0; const neighborsToProcess = [];
-            for (let dr = -1; dr <= 1; dr++) { for (let dc = -1; dc <= 1; dc++) {
-                if (dr === 0 && dc === 0) continue;
-                const nr = r + dr; const nc = c + dc;
-                if (isValidCell(nr, nc)) {
-                    const neighbor = board[nr][nc];
-                    if (neighbor.markState === MARK_FLAG) adjacentFlags++;
-                    if (!neighbor.isRevealed && neighbor.markState !== MARK_FLAG) neighborsToProcess.push({ r: nr, c: nc, cell: neighbor });
-                }
-            }}
-            if (adjacentFlags === cellData.adjacentMines) {
-                let hitMineInChord = false, boardActuallyChanged = false, revealedEmptyInChord = false;
-                for (const neighborInfo of neighborsToProcess) {
-                    const { r: nr, c: nc, cell: neighborCell } = neighborInfo;
-                    if (!neighborCell.isRevealed) { 
-                        neighborCell.isRevealed = true; boardActuallyChanged = true;
-                        if (neighborCell.isMine) { hitMineInChord = true; neighborCell.detonated = true; }
-                        else { revealedCells++; if (neighborCell.adjacentMines === 0) { revealedEmptyInChord = true; revealAdjacentCells(nr, nc); } }
-                    }
-                }
-                if (hitMineInChord) { playSound(SOUND_TYPES.EXPLOSION); revealAllMines(r,c); showGameOverMessage(false); } 
-                else if (boardActuallyChanged) { if (revealedEmptyInChord) playSound(SOUND_TYPES.REVEAL_EMPTY); else playSound(SOUND_TYPES.CLICK); renderBoard(); checkWinCondition(); }
-            }
-            if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); 
-        }
-        function revealAdjacentCells(r, c) {
-            for (let dr = -1; dr <= 1; dr++) { for (let dc = -1; dc <= 1; dc++) {
-                if (dr === 0 && dc === 0) continue;
-                const nr = r + dr; const nc = c + dc;
-                if (isValidCell(nr, nc)) {
-                    const neighbor = board[nr][nc];
-                    if (!neighbor.isRevealed && neighbor.markState === MARK_NONE) { 
-                         if (!neighbor.isMine) { 
-                            neighbor.isRevealed = true; revealedCells++;
-                            if (neighbor.adjacentMines === 0) revealAdjacentCells(nr, nc);
-                        }
-                    }
-                }
-            }}
-         }
-        function isValidCell(r, c) { return r >= 0 && r < currentDifficulty.rows && c >= 0 && c < currentDifficulty.cols; }
+				const isProtected = Math.abs(r - initialRow) <= safeZoneRadius &&
+									Math.abs(c - initialCol) <= safeZoneRadius;
 
-        function revealAllMines(clickedMineR = -1, clickedMineC = -1) { 
-            board.forEach(row => row.forEach(cell => {
-                if (cell.isMine) {
-                    cell.isRevealed = true; 
-                    if (cell.row === clickedMineR && cell.col === clickedMineC) cell.detonated = true;
-                } else if (cell.markState === MARK_FLAG && !cell.isMine) { 
-                    cell.isRevealed = true; 
-                    cell.isMisflagged = true; 
-                }
-            }));
-            renderBoard(); 
-        }
-        
-        function checkWinCondition() {
-            if (gameOver) return; 
-            const totalNonMineCells = (currentDifficulty.rows * currentDifficulty.cols) - currentDifficulty.mines;
-            if (revealedCells === totalNonMineCells) {
-                gameWon = true; 
-                showGameOverMessage(true); 
-            }
-         }
-        function startTimer(isResuming = false) { 
-            if (!isResuming && timerInterval) { 
-                clearInterval(timerInterval);
-            }
-            if (!isResuming) { 
-                seconds = 0;
-            }
-            
-            DOMElements.timer.textContent = `${seconds}s`; 
+				if (isProtected) continue;
 
-            if (!firstClick && !isPaused && !gameOver) { 
-                timerInterval = setInterval(() => {
-                    if (!gameOver && !isPaused) { 
-                        seconds++;
-                        DOMElements.timer.textContent = `${seconds}s`;
-                    } else {
-                        clearInterval(timerInterval); 
-                    }
-                }, 1000);
-            }
-        }
-        function stopTimer() { clearInterval(timerInterval); }
+				if (!board[r][c].isMine) {
+					board[r][c].isMine = true;
+					minesPlaced++;
+				}
+			}
+			calculateAdjacentMines();
+		}
+		function calculateAdjacentMines() {
+			for (let r = 0; r < currentDifficulty.rows; r++) {
+				for (let c = 0; c < currentDifficulty.cols; c++) {
+					if (board[r][c].isMine) continue;
+					let count = 0;
+					for (let dr = -1; dr <= 1; dr++) {
+						for (let dc = -1; dc <= 1; dc++) {
+							if (dr === 0 && dc === 0) continue;
+							const nr = r + dr; const nc = c + dc;
+							if (isValidCell(nr, nc) && board[nr][nc].isMine) count++;
+						}
+					}
+					board[r][c].adjacentMines = count;
+				}
+			}
+		}
 
-        function validatePlayerNameInput() {
-            const name = DOMElements.messageModal.playerNameInput.value; 
-            const errorElement = document.getElementById('playerNameError'); 
-            const closeButton = DOMElements.messageModal.closeButton;
-            let isValid = true;
-            let errorMessage = "";
+		function renderBoard() {
+			if (DOMElements.customErrorOverlay && DOMElements.customErrorOverlay.style.display === 'flex') return;
 
-            if (name.length === 0) {
-                errorMessage = "Name cannot be empty.";
-                isValid = false;
-            } else if (!PLAYER_NAME_ALLOWED_REGEX.test(name)) {
-                errorMessage = "Only A-Z, a-z, 0-9 allowed.";
-                isValid = false;
-            } else if (name.length > PLAYER_NAME_MAX_LENGTH) { 
-                errorMessage = `Max ${PLAYER_NAME_MAX_LENGTH} characters.`; 
-                isValid = false;
-            }
-            
-            errorElement.textContent = errorMessage || '\u00A0'; 
-            if(errorMessage) errorElement.classList.add('visible'); else errorElement.classList.remove('visible');
+			determineDynamicCellSize();
+			DOMElements.gameBoard.innerHTML = '';
+			DOMElements.gameBoard.style.gridTemplateColumns = `repeat(${currentDifficulty.cols}, 1fr)`;
+
+			DOMElements.gameBoard.style.width = `${currentDifficulty.cols * currentDynamicCellSize + (currentDifficulty.cols > 0 ? (currentDifficulty.cols - 1) * GAP_SIZE_PX : 0)}px`;
+
+			for (let r = 0; r < currentDifficulty.rows; r++) {
+				for (let c = 0; c < currentDifficulty.cols; c++) {
+					const cellElement = document.createElement('div');
+					const cellData = board[r][c];
+					cellElement.className = 'cell';
+					cellElement.dataset.row = r; cellElement.dataset.col = c;
+
+					cellElement.style.width = `${currentDynamicCellSize}px`;
+					cellElement.style.height = `${currentDynamicCellSize}px`;
+					cellElement.style.fontSize = `${Math.max(9, Math.floor(currentDynamicCellSize * 0.5))}px`;
+
+					if (cellData.isRevealed) {
+						cellElement.classList.add('revealed');
+						if (cellData.isMine) {
+							cellElement.classList.add('mine');
+							if (cellData.detonated) cellElement.classList.add('mine-detonated');
+							cellElement.textContent = '💣';
+						} else if (cellData.isMisflagged) {
+							cellElement.classList.add('misflagged');
+							cellElement.textContent = '❌';
+						} else if (cellData.adjacentMines > 0) {
+							cellElement.textContent = cellData.adjacentMines;
+							cellElement.classList.add(`cell-${cellData.adjacentMines}`);
+						}
+					} else {
+						if (cellData.markState === MARK_FLAG) {
+							cellElement.classList.add('flagged');
+							cellElement.textContent = '🚩';
+						} else if (cellData.markState === MARK_QUESTION) {
+							cellElement.classList.add('question');
+							cellElement.textContent = '❓';
+						}
+					}
+
+					cellElement.addEventListener('click', () => { if (!isPaused && !gameOver) handleCellClick(r, c); });
+					cellElement.addEventListener('contextmenu', (e) => { e.preventDefault(); if (!isPaused && !gameOver) handleCellRightClick(r, c); });
+					cellElement.addEventListener('mousedown', (event) => {
+						if (isPaused || gameOver || (DOMElements.customErrorOverlay && DOMElements.customErrorOverlay.style.display === 'flex') ) return;
+						if ((event.button === 0 || event.button === 1) && !cellData.isRevealed && cellData.markState === MARK_NONE) {
+							isMousePressedOnCell = true; updateSmileyFace(SMILEY_SURPRISED);
+						}
+						if (event.button === 1) { event.preventDefault(); handleMiddleClickChord(r, c); }
+					});
+					DOMElements.gameBoard.appendChild(cellElement);
+				}
+			}
+		}
+
+		function handleCellClick(r, c) {
+			const cell = board[r][c];
+			if (gameOver || cell.isRevealed || cell.markState !== MARK_NONE) {
+				if (isMousePressedOnCell) { isMousePressedOnCell = false; if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); }
+				return;
+			}
+			isMousePressedOnCell = false;
+
+			if (firstClick) {
+				placeMines(r, c);
+				firstClick = false;
+				startTimer();
+			}
+			cell.isRevealed = true;
+
+			if (cell.isMine) {
+				playSound(SOUND_TYPES.EXPLOSION);
+				cell.detonated = true;
+				revealAllMines(r,c);
+				showGameOverMessage(false);
+				return;
+			}
+			revealedCells++; playSound(SOUND_TYPES.CLICK);
+			if (cell.adjacentMines === 0) { revealAdjacentCells(r, c); playSound(SOUND_TYPES.REVEAL_EMPTY); }
+			renderBoard(); checkWinCondition();
+			if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL);
+		}
+		function handleCellRightClick(r, c) {
+			if (gameOver || board[r][c].isRevealed) return;
+			const cell = board[r][c];
+			if (cell.markState === MARK_NONE) { cell.markState = MARK_FLAG; flaggedMines++; playSound(SOUND_TYPES.FLAG); }
+			else if (cell.markState === MARK_FLAG) { cell.markState = MARK_QUESTION; flaggedMines--; playSound(SOUND_TYPES.UNMARK); }
+			else if (cell.markState === MARK_QUESTION) { cell.markState = MARK_NONE; playSound(SOUND_TYPES.UNMARK); }
+			DOMElements.minesCount.textContent = currentDifficulty.mines - flaggedMines;
+			renderBoard();
+		}
+		function handleMiddleClickChord(r, c) {
+			if (gameOver) return;
+			isMousePressedOnCell = false;
+			const cellData = board[r][c];
+			if (!cellData.isRevealed || cellData.adjacentMines === 0 || cellData.isMine) {
+				if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL); return;
+			}
+			let adjacentFlags = 0; const neighborsToProcess = [];
+			for (let dr = -1; dr <= 1; dr++) { for (let dc = -1; dc <= 1; dc++) {
+				if (dr === 0 && dc === 0) continue;
+				const nr = r + dr; const nc = c + dc;
+				if (isValidCell(nr, nc)) {
+					const neighbor = board[nr][nc];
+					if (neighbor.markState === MARK_FLAG) adjacentFlags++;
+					if (!neighbor.isRevealed && neighbor.markState !== MARK_FLAG) neighborsToProcess.push({ r: nr, c: nc, cell: neighbor });
+				}
+			}}
+			if (adjacentFlags === cellData.adjacentMines) {
+				let hitMineInChord = false, boardActuallyChanged = false, revealedEmptyInChord = false;
+				for (const neighborInfo of neighborsToProcess) {
+					const { r: nr, c: nc, cell: neighborCell } = neighborInfo;
+					if (!neighborCell.isRevealed) {
+						neighborCell.isRevealed = true; boardActuallyChanged = true;
+						if (neighborCell.isMine) { hitMineInChord = true; neighborCell.detonated = true; }
+						else { revealedCells++; if (neighborCell.adjacentMines === 0) { revealedEmptyInChord = true; revealAdjacentCells(nr, nc); } }
+					}
+				}
+				if (hitMineInChord) { playSound(SOUND_TYPES.EXPLOSION); revealAllMines(r,c); showGameOverMessage(false); }
+				else if (boardActuallyChanged) { if (revealedEmptyInChord) playSound(SOUND_TYPES.REVEAL_EMPTY); else playSound(SOUND_TYPES.CLICK); renderBoard(); checkWinCondition(); }
+			}
+			if (!gameOver) updateSmileyFace(SMILEY_NEUTRAL);
+		}
+		function revealAdjacentCells(r, c) {
+			for (let dr = -1; dr <= 1; dr++) { for (let dc = -1; dc <= 1; dc++) {
+				if (dr === 0 && dc === 0) continue;
+				const nr = r + dr; const nc = c + dc;
+				if (isValidCell(nr, nc)) {
+					const neighbor = board[nr][nc];
+					if (!neighbor.isRevealed && neighbor.markState === MARK_NONE) {
+						if (!neighbor.isMine) {
+							neighbor.isRevealed = true; revealedCells++;
+							if (neighbor.adjacentMines === 0) revealAdjacentCells(nr, nc);
+						}
+					}
+				}
+			}}
+		}
+		function isValidCell(r, c) { return r >= 0 && r < currentDifficulty.rows && c >= 0 && c < currentDifficulty.cols; }
+
+		function revealAllMines(clickedMineR = -1, clickedMineC = -1) {
+			board.forEach(row => row.forEach(cell => {
+				if (cell.isMine) {
+					cell.isRevealed = true;
+					if (cell.row === clickedMineR && cell.col === clickedMineC) cell.detonated = true;
+				} else if (cell.markState === MARK_FLAG && !cell.isMine) {
+					cell.isRevealed = true;
+					cell.isMisflagged = true;
+				}
+			}));
+			renderBoard();
+		}
+
+		function checkWinCondition() {
+			if (gameOver) return;
+			const totalNonMineCells = (currentDifficulty.rows * currentDifficulty.cols) - currentDifficulty.mines;
+			if (revealedCells === totalNonMineCells) {
+				gameWon = true;
+				showGameOverMessage(true);
+			}
+		}
+		function startTimer(isResuming = false) {
+			if (!isResuming && timerInterval) {
+				clearInterval(timerInterval);
+			}
+			if (!isResuming) {
+				seconds = 0;
+			}
+
+			DOMElements.timer.textContent = `${seconds}s`;
+
+			if (!firstClick && !isPaused && !gameOver) {
+				timerInterval = setInterval(() => {
+					if (!gameOver && !isPaused) {
+						seconds++;
+						DOMElements.timer.textContent = `${seconds}s`;
+					} else {
+						clearInterval(timerInterval);
+					}
+				}, 1000);
+			}
+		}
+		function stopTimer() { clearInterval(timerInterval); }
+
+		function validatePlayerNameInput() {
+			const name = DOMElements.messageModal.playerNameInput.value;
+			const errorElement = document.getElementById('playerNameError');
+			const closeButton = DOMElements.messageModal.closeButton;
+			let isValid = true;
+			let errorMessage = "";
+
+			if (name.length === 0) {
+				errorMessage = "Name cannot be empty.";
+				isValid = false;
+			} else if (!PLAYER_NAME_ALLOWED_REGEX.test(name)) {
+				errorMessage = "Only A-Z, a-z, 0-9 allowed.";
+				isValid = false;
+			} else if (name.length > PLAYER_NAME_MAX_LENGTH) {
+				errorMessage = `Max ${PLAYER_NAME_MAX_LENGTH} characters.`;
+				isValid = false;
+			}
+
+			errorElement.textContent = errorMessage || '\u00A0';
+			if(errorMessage) errorElement.classList.add('visible'); else errorElement.classList.remove('visible');
 
             if (errorMessage && !firstClick && !DOMElements.messageModal.namePromptContainer.classList.contains('hidden')) {
-                 playSound(SOUND_TYPES.ERROR);
-            }
+				playSound(SOUND_TYPES.ERROR);
+			}
 
-            if (closeButton) {
-                closeButton.disabled = !isValid;
-                if (!isValid) {
-                    closeButton.classList.add('opacity-50', 'cursor-not-allowed');
-                } else {
-                    closeButton.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            }
-            return isValid;
-        }
+			if (closeButton) {
+				closeButton.disabled = !isValid;
+				if (!isValid) {
+					closeButton.classList.add('opacity-50', 'cursor-not-allowed');
+				} else {
+					closeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+				}
+			}
+			return isValid;
+		}
 
-        function handleWinModalClose() {
-            if (gameWon) { 
-                 let isBaseDiffForScore = false;
-                 let baseDiffKeyForScore = "";
-                 for (const key in BASE_DIFFICULTIES) { if (BASE_DIFFICULTIES[key].name === currentDifficulty.name) { isBaseDiffForScore = true; baseDiffKeyForScore = key; break; } }
+		function handleWinModalClose() {
+			if (gameWon) {
+				let isBaseDiffForScore = false;
+				let baseDiffKeyForScore = "";
+				for (const key in BASE_DIFFICULTIES) { if (BASE_DIFFICULTIES[key].name === currentDifficulty.name) { isBaseDiffForScore = true; baseDiffKeyForScore = key; break; } }
 
-                if (isBaseDiffForScore && !DOMElements.messageModal.namePromptContainer.classList.contains('hidden')) {
-                    let playerName = DOMElements.messageModal.playerNameInput.value.trim(); 
-                    
-                    if (!playerName || !PLAYER_NAME_ALLOWED_REGEX.test(playerName) || playerName.length > PLAYER_NAME_MAX_LENGTH || playerName.length === 0) {
-                        playerName = "Player"; 
-                    }
-                    playerName = playerName.substring(0, PLAYER_NAME_MAX_LENGTH); 
+				if (isBaseDiffForScore && !DOMElements.messageModal.namePromptContainer.classList.contains('hidden')) {
+					let playerName = DOMElements.messageModal.playerNameInput.value.trim();
 
-                    localStorage.setItem('minesweeperPlayerName', playerName);
-                    updateHighScore(baseDiffKeyForScore, seconds, playerName);
-                }
-            }
-            DOMElements.messageModal.modal.style.display = 'none';
-        }
+					if (!playerName || !PLAYER_NAME_ALLOWED_REGEX.test(playerName) || playerName.length > PLAYER_NAME_MAX_LENGTH || playerName.length === 0) {
+						playerName = "Player";
+					}
+					playerName = playerName.substring(0, PLAYER_NAME_MAX_LENGTH);
 
-        function showGameOverMessage(isWin) { 
-            gameOver = true; 
-            stopTimer(); 
-            updateSmileyFace(isWin ? SMILEY_WIN : SMILEY_LOSE);
-            
-            if (!isWin) { 
-                updateStats(false); 
-            } else { 
-                updateStats(true); 
-                board.forEach(row => row.forEach(cell => { if (cell.isMine && cell.markState !== MARK_FLAG) cell.markState = MARK_FLAG; }));
-                flaggedMines = currentDifficulty.mines; 
-                if(DOMElements && DOMElements.minesCount) DOMElements.minesCount.textContent = 0; 
-                renderBoard(); 
+					localStorage.setItem('minesweeperPlayerName', playerName);
+					updateHighScore(baseDiffKeyForScore, seconds, playerName);
+				}
+			}
+			DOMElements.messageModal.modal.style.display = 'none';
+		}
 
-                let highScoreInfoText = "";
-                let isBaseDiffForScore = false;
-                for (const key in BASE_DIFFICULTIES) {
-                    if (BASE_DIFFICULTIES[key].name === currentDifficulty.name) {
-                         isBaseDiffForScore = true; break;
-                    }
-                }
+		function showGameOverMessage(isWin) {
+			gameOver = true;
+			stopTimer();
+			updateSmileyFace(isWin ? SMILEY_WIN : SMILEY_LOSE);
 
-                if (isBaseDiffForScore) {
-                    DOMElements.messageModal.namePromptContainer.classList.remove('hidden');
-                    let storedName = localStorage.getItem('minesweeperPlayerName');
-                    if (!storedName || !PLAYER_NAME_ALLOWED_REGEX.test(storedName) || storedName.length > PLAYER_NAME_MAX_LENGTH) {
-                        storedName = "Player"; 
-                    }
-                    DOMElements.messageModal.playerNameInput.value = storedName;
-                    DOMElements.messageModal.highScoreInfo.textContent = `Your time: ${seconds}s. Enter name for high score!`;
-                    validatePlayerNameInput(); 
-                    DOMElements.messageModal.playerNameInput.focus();
-                    DOMElements.messageModal.playerNameInput.select();
-                    DOMElements.messageModal.modal.style.display = "flex"; 
-                } else {
-                     DOMElements.messageModal.namePromptContainer.classList.add('hidden');
-                     DOMElements.messageModal.highScoreInfo.textContent = `Custom game won in ${seconds}s.`; 
-                     DOMElements.messageModal.modal.style.display = "flex"; 
-                }
-            }
-            if (DOMElements && DOMElements.messageModal && DOMElements.messageModal.closeButton) {
-                DOMElements.messageModal.closeButton.onclick = handleWinModalClose; 
-            }
-        }
+			if (!isWin) {
+				updateStats(false);
+			} else {
+				updateStats(true);
+				board.forEach(row => row.forEach(cell => { if (cell.isMine && cell.markState !== MARK_FLAG) cell.markState = MARK_FLAG; }));
+				flaggedMines = currentDifficulty.mines;
+				if(DOMElements && DOMElements.minesCount) DOMElements.minesCount.textContent = 0;
+				renderBoard();
 
-        document.addEventListener('DOMContentLoaded', () => {
-            DOMElements = {
-                gameBoard: document.getElementById('gameBoard'),
-                minesCount: document.getElementById('minesCount'),
-                timer: document.getElementById('timer'),
-                smiley: document.getElementById('smileyButton'),
-                difficultySelect: document.getElementById('difficulty'),
-                customInputs: {
-                    container: document.getElementById('customInputsContainer'),
-                    rows: document.getElementById('customRows'),
-                    cols: document.getElementById('customCols'),
-                    mines: document.getElementById('customMines')
-                },
-                messageModal: {
-                    modal: document.getElementById('messageModal'),
-                    closeButton: document.getElementById('modalCloseButton'),
-                    highScoreInfo: document.getElementById('highScoreInfoDisplay'),
-                    namePromptContainer: document.getElementById('namePromptContainer'),
-                    playerNameInput: document.getElementById('playerNameInput')
-                },
-                reportModal: { 
-                    modal: document.getElementById('reportModal'),
-                    statsContent: document.getElementById('statsReportContent'),
-                    highScoresContent: document.getElementById('highScoresReportContent'),
-                    resetButton: document.getElementById('resetAllDataButton'), 
-                    closeButton: document.getElementById('closeReportModalButton'), 
-                    tabStatsButton: document.getElementById('tabStatsButton'),
-                    tabHighScoresButton: document.getElementById('tabHighScoresButton')
-                },
-                themeSelector: document.getElementById('themeSelector'),
-                muteButton: document.getElementById('muteButton'),
-                pauseButton: document.getElementById('pauseButton'),
-                pauseOverlay: document.getElementById('pauseOverlay'), 
-                viewReportButton: document.getElementById('viewReportButton'), 
-                customErrorOverlay: document.getElementById('customErrorOverlay'),
-                contactSection: document.getElementById('contactSection'), 
-                mainGameContainer: document.getElementById('mainGameContainer'), 
-                contactButton: document.getElementById('contactButton'), 
-                backToGameButton: document.getElementById('backToGameButton') 
-            };
+				let highScoreInfoText = "";
+				let isBaseDiffForScore = false;
+				for (const key in BASE_DIFFICULTIES) {
+					if (BASE_DIFFICULTIES[key].name === currentDifficulty.name) {
+						isBaseDiffForScore = true; break;
+					}
+				}
 
-            initAudio(); loadTheme();
-            DOMElements.viewReportButton.addEventListener('click', () => showReportModal('stats')); 
-            DOMElements.reportModal.resetButton.addEventListener('click', resetAllData); 
-            DOMElements.reportModal.closeButton.addEventListener('click', () => DOMElements.reportModal.modal.style.display = 'none');
-            DOMElements.reportModal.tabStatsButton.addEventListener('click', () => showReportModal('stats'));
-            DOMElements.reportModal.tabHighScoresButton.addEventListener('click', () => showReportModal('highScores'));
-            
-            DOMElements.pauseButton.addEventListener('click', togglePauseGame);
-            DOMElements.pauseOverlay.addEventListener('click', togglePauseGame); 
-            DOMElements.smiley.addEventListener('click', startGame); 
-            DOMElements.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value)); 
-            DOMElements.muteButton.addEventListener('click', toggleMute); 
-            DOMElements.contactButton.addEventListener('click', () => {
-                DOMElements.mainGameContainer.classList.add('hidden');
-                DOMElements.contactSection.classList.remove('hidden');
-            });
-            DOMElements.backToGameButton.addEventListener('click', () => {
-                DOMElements.contactSection.classList.add('hidden');
-                DOMElements.mainGameContainer.classList.remove('hidden');
-            });
-            DOMElements.messageModal.playerNameInput.addEventListener('input', validatePlayerNameInput); 
-            DOMElements.messageModal.playerNameInput.addEventListener('keydown', (event) => {
-                const nameInput = DOMElements.messageModal.playerNameInput;
-                const errorElement = document.getElementById('playerNameError');
-                if (nameInput.value.length >= PLAYER_NAME_MAX_LENGTH && 
-                    event.key.length === 1 && 
-                    !event.ctrlKey && !event.metaKey &&
-                    !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(event.key)
-                    ) { 
-                    if (errorElement) {
-                        errorElement.textContent = `Max ${PLAYER_NAME_MAX_LENGTH} characters.`;
-                        errorElement.classList.add('visible');
-                    }
-                    playSound(SOUND_TYPES.ERROR);
-                    event.preventDefault(); 
-                } else if (errorElement && errorElement.classList.contains('visible') && errorElement.textContent === `Max ${PLAYER_NAME_MAX_LENGTH} characters.` && nameInput.value.length < PLAYER_NAME_MAX_LENGTH) {
-                     setTimeout(validatePlayerNameInput, 0); 
-                }
-            });
-            const sanitizeAndValidateCustomInputHandler = (inputElement, maxLength) => {
-                let value = inputElement.value;
-                let sanitizedValue = value.replace(/\D/g, ''); 
-                
-                if (sanitizedValue.length > maxLength) {
-                    sanitizedValue = sanitizedValue.substring(0, maxLength);
-                }
-                inputElement.value = sanitizedValue; 
-            };
-            DOMElements.customInputs.rows.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.rows, 3));
-            DOMElements.customInputs.cols.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.cols, 3));
-            DOMElements.customInputs.mines.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.mines, 4));
-            DOMElements.difficultySelect.addEventListener('change', (e) => {
-                if (e.target.value === 'custom') {
-                    DOMElements.customInputs.container.classList.remove('hidden');
-                    DOMElements.customInputs.container.classList.add('flex');
-                    const rVal = parseInt(DOMElements.customInputs.rows.value);
-                    const cVal = parseInt(DOMElements.customInputs.cols.value);
-                    const mVal = parseInt(DOMElements.customInputs.mines.value);
-                    DOMElements.customInputs.rows.value = (isNaN(rVal) || rVal < 5 || rVal > 100) ? 10 : rVal;
-                    DOMElements.customInputs.cols.value = (isNaN(cVal) || cVal < 5 || cVal > 100) ? 10 : cVal;
-                    DOMElements.customInputs.mines.value = (isNaN(mVal) || mVal < 10) ? 10 : mVal; 
-                } else {
-                    DOMElements.customInputs.container.classList.add('hidden');
-                    DOMElements.customInputs.container.classList.remove('flex');
-                    showCustomInputErrorOverlay(false); 
-                }
-                startGame(); 
-            });
-            const initialDifficultyValue = DOMElements.difficultySelect.value || 'medium';
-            if (initialDifficultyValue === 'custom') {
-                DOMElements.customInputs.container.classList.remove('hidden');
-                DOMElements.customInputs.container.classList.add('flex');
-                DOMElements.customInputs.rows.value = DOMElements.customInputs.rows.value || 10;
-                DOMElements.customInputs.cols.value = DOMElements.customInputs.cols.value || 10;
-                DOMElements.customInputs.mines.value = DOMElements.customInputs.mines.value || 10;
-            }
-            startGame();
-        });
-    </script>
+				if (isBaseDiffForScore) {
+					DOMElements.messageModal.namePromptContainer.classList.remove('hidden');
+					let storedName = localStorage.getItem('minesweeperPlayerName');
+					if (!storedName || !PLAYER_NAME_ALLOWED_REGEX.test(storedName) || storedName.length > PLAYER_NAME_MAX_LENGTH) {
+						storedName = "Player";
+					}
+					DOMElements.messageModal.playerNameInput.value = storedName;
+					DOMElements.messageModal.highScoreInfo.textContent = `Your time: ${seconds}s. Enter name for high score!`;
+					validatePlayerNameInput();
+					DOMElements.messageModal.playerNameInput.focus();
+					DOMElements.messageModal.playerNameInput.select();
+					DOMElements.messageModal.modal.style.display = "flex";
+				} else {
+					DOMElements.messageModal.namePromptContainer.classList.add('hidden');
+					DOMElements.messageModal.highScoreInfo.textContent = `Custom game won in ${seconds}s.`;
+					DOMElements.messageModal.modal.style.display = "flex";
+				}
+			}
+			if (DOMElements && DOMElements.messageModal && DOMElements.messageModal.closeButton) {
+				DOMElements.messageModal.closeButton.onclick = handleWinModalClose;
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			DOMElements = {
+				gameBoard: document.getElementById('gameBoard'),
+				minesCount: document.getElementById('minesCount'),
+				timer: document.getElementById('timer'),
+				smiley: document.getElementById('smileyButton'),
+				difficultySelect: document.getElementById('difficulty'),
+				customInputs: {
+					container: document.getElementById('customInputsContainer'),
+					rows: document.getElementById('customRows'),
+					cols: document.getElementById('customCols'),
+					mines: document.getElementById('customMines')
+				},
+				messageModal: {
+					modal: document.getElementById('messageModal'),
+					closeButton: document.getElementById('modalCloseButton'),
+					highScoreInfo: document.getElementById('highScoreInfoDisplay'),
+					namePromptContainer: document.getElementById('namePromptContainer'),
+					playerNameInput: document.getElementById('playerNameInput')
+				},
+				reportModal: {
+					modal: document.getElementById('reportModal'),
+					statsContent: document.getElementById('statsReportContent'),
+					highScoresContent: document.getElementById('highScoresReportContent'),
+					resetButton: document.getElementById('resetAllDataButton'),
+					closeButton: document.getElementById('closeReportModalButton'),
+					tabStatsButton: document.getElementById('tabStatsButton'),
+					tabHighScoresButton: document.getElementById('tabHighScoresButton')
+				},
+				themeSelector: document.getElementById('themeSelector'),
+				muteButton: document.getElementById('muteButton'),
+				pauseButton: document.getElementById('pauseButton'),
+				pauseOverlay: document.getElementById('pauseOverlay'),
+				viewReportButton: document.getElementById('viewReportButton'),
+				customErrorOverlay: document.getElementById('customErrorOverlay'),
+				contactSection: document.getElementById('contactSection'),
+				mainGameContainer: document.getElementById('mainGameContainer'),
+				contactButton: document.getElementById('contactButton'),
+				backToGameButton: document.getElementById('backToGameButton')
+			};
+
+			initAudio(); loadTheme();
+			DOMElements.viewReportButton.addEventListener('click', () => showReportModal('stats'));
+			DOMElements.reportModal.resetButton.addEventListener('click', resetAllData);
+			DOMElements.reportModal.closeButton.addEventListener('click', () => DOMElements.reportModal.modal.style.display = 'none');
+			DOMElements.reportModal.tabStatsButton.addEventListener('click', () => showReportModal('stats'));
+			DOMElements.reportModal.tabHighScoresButton.addEventListener('click', () => showReportModal('highScores'));
+
+			DOMElements.pauseButton.addEventListener('click', togglePauseGame);
+			DOMElements.pauseOverlay.addEventListener('click', togglePauseGame);
+			DOMElements.smiley.addEventListener('click', startGame);
+			DOMElements.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
+			DOMElements.muteButton.addEventListener('click', toggleMute);
+			DOMElements.contactButton.addEventListener('click', () => {
+				DOMElements.mainGameContainer.classList.add('hidden');
+				DOMElements.contactSection.classList.remove('hidden');
+			});
+			DOMElements.backToGameButton.addEventListener('click', () => {
+				DOMElements.contactSection.classList.add('hidden');
+				DOMElements.mainGameContainer.classList.remove('hidden');
+			});
+
+			DOMElements.messageModal.playerNameInput.addEventListener('input', validatePlayerNameInput);
+			DOMElements.messageModal.playerNameInput.addEventListener('keydown', (event) => {
+				const nameInput = DOMElements.messageModal.playerNameInput;
+				const errorElement = document.getElementById('playerNameError');
+
+				if (nameInput.value.length >= PLAYER_NAME_MAX_LENGTH &&
+					event.key.length === 1 &&
+					!event.ctrlKey && !event.metaKey &&
+					!['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'].includes(event.key)
+					) {
+					if (errorElement) {
+						errorElement.textContent = `Max ${PLAYER_NAME_MAX_LENGTH} characters.`;
+						errorElement.classList.add('visible');
+					}
+					playSound(SOUND_TYPES.ERROR);
+					event.preventDefault();
+				} else if (errorElement && errorElement.classList.contains('visible') && errorElement.textContent === `Max ${PLAYER_NAME_MAX_LENGTH} characters.` && nameInput.value.length < PLAYER_NAME_MAX_LENGTH) {
+					setTimeout(validatePlayerNameInput, 0);
+				}
+			});
+
+			const sanitizeAndValidateCustomInputHandler = (inputElement, maxLength) => {
+				let value = inputElement.value;
+				let sanitizedValue = value.replace(/\D/g, '');
+
+				if (sanitizedValue.length > maxLength) {
+					sanitizedValue = sanitizedValue.substring(0, maxLength);
+				}
+				inputElement.value = sanitizedValue;
+			};
+
+			DOMElements.customInputs.rows.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.rows, 3));
+			DOMElements.customInputs.cols.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.cols, 3));
+			DOMElements.customInputs.mines.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.mines, 4));
+			DOMElements.difficultySelect.addEventListener('change', (e) => {
+				if (e.target.value === 'custom') {
+					DOMElements.customInputs.container.classList.remove('hidden');
+					DOMElements.customInputs.container.classList.add('flex');
+					const rVal = parseInt(DOMElements.customInputs.rows.value);
+					const cVal = parseInt(DOMElements.customInputs.cols.value);
+					const mVal = parseInt(DOMElements.customInputs.mines.value);
+					DOMElements.customInputs.rows.value = (isNaN(rVal) || rVal < 5 || rVal > 100) ? 10 : rVal;
+					DOMElements.customInputs.cols.value = (isNaN(cVal) || cVal < 5 || cVal > 100) ? 10 : cVal;
+					DOMElements.customInputs.mines.value = (isNaN(mVal) || mVal < 10) ? 10 : mVal; 
+				} else {
+					DOMElements.customInputs.container.classList.add('hidden');
+					DOMElements.customInputs.container.classList.remove('flex');
+					showCustomInputErrorOverlay(false);
+				}
+				startGame();
+			});
+
+			const initialDifficultyValue = DOMElements.difficultySelect.value || 'medium';
+			if (initialDifficultyValue === 'custom') {
+				DOMElements.customInputs.container.classList.remove('hidden');
+				DOMElements.customInputs.container.classList.add('flex');
+				DOMElements.customInputs.rows.value = DOMElements.customInputs.rows.value || 10;
+				DOMElements.customInputs.cols.value = DOMElements.customInputs.cols.value || 10;
+				DOMElements.customInputs.mines.value = DOMElements.customInputs.mines.value || 10;
+			}
+			startGame();
+		});
+	</script>
 </body>
 </html>
