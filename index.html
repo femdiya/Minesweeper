@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title> 
-    <script src="https://cdn.tailwindcss.com"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { /* Classic Theme (Default) */
@@ -151,8 +151,6 @@
             --cell-num-1: #357ABD; --cell-num-2: #5cb85c; --cell-num-3: #d9534f; --cell-num-4: #46407A;
             --cell-num-5: #9d58a0; --cell-num-6: #d94a8c; --cell-num-7: #ce7e00; --cell-num-8: #606c7a;
         }
-
-
         body { font-family: 'Inter', sans-serif; user-select: none; background-color: var(--body-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
         .main-container { background-color: var(--container-bg); box-shadow: 0 10px 15px -3px var(--container-shadow), 0 4px 6px -2px var(--container-shadow); transition: background-color 0.3s, box-shadow 0.3s; }
         .text-muted { color: var(--text-muted-color); }
@@ -194,7 +192,6 @@
         }
         .control-button:hover { background-color: var(--control-button-hover-bg); }
         .control-button:focus { outline: none; box-shadow: 0 0 0 2px var(--button-bg); }
-
 
         .smiley-button { width: 40px; height: 40px; font-size: 24px; display: flex; justify-content: center; align-items: center; border: 2px outset var(--smiley-border); background-color: var(--smiley-bg); cursor: pointer; flex-shrink: 0; }
         .smiley-button:active { border-style: inset; }
@@ -367,7 +364,6 @@
         </div>
     </div>
 
-
     <div id="messageModal" class="modal">
         <div class="modal-content">
             <div id="highScoreInfoDisplay" class="text-lg text-muted mb-3"></div> 
@@ -407,7 +403,6 @@
     </div>
 
     <script>
-        // --- Constants & Config ---
         const BASE_DIFFICULTIES = {
             easy: { name: 'Easy', rows: 9, cols: 9, mines: 10 },
             medium: { name: 'Medium', rows: 16, cols: 16, mines: 40 },
@@ -426,8 +421,6 @@
         const MIN_CELL_SIZE_PX = 20;
         const GAP_SIZE_PX = 2; 
 
-
-        // --- State Variables ---
         let currentDifficulty = JSON.parse(JSON.stringify(BASE_DIFFICULTIES.medium)); 
         let board = [], revealedCells = 0, flaggedMines = 0;
         let gameOver = false, gameWon = false, isPaused = false;
@@ -435,11 +428,8 @@
         let audioContext, isMuted = localStorage.getItem('minesweeperMuted') === 'true';
         let currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
 
-
-        // --- DOM Elements (declare globally, assign in DOMContentLoaded) ---
         let DOMElements; 
 
-        // --- Sound ---
         function initAudio() { try { audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.warn("Web Audio API not supported."); } updateMuteButtonVisual(); }
         function playSound(type) { 
             if (isMuted || !audioContext) return;
@@ -459,11 +449,9 @@
         function toggleMute() { isMuted = !isMuted; localStorage.setItem('minesweeperMuted', isMuted); updateMuteButtonVisual(); }
         function updateMuteButtonVisual() { if(DOMElements && DOMElements.muteButton) DOMElements.muteButton.textContent = isMuted ? '🔇' : '🔊'; }
 
-        // --- Theme ---
         function applyTheme(themeName) { document.body.className = 'theme-' + themeName + " flex flex-col items-center justify-center min-h-screen p-4"; localStorage.setItem('minesweeperTheme', themeName); if (DOMElements && DOMElements.themeSelector && DOMElements.themeSelector.value !== themeName) DOMElements.themeSelector.value = themeName; }
         function loadTheme() { const savedTheme = localStorage.getItem('minesweeperTheme') || 'classic'; applyTheme(savedTheme); }
 
-        // --- High Scores & Stats ---
         function getStoredData(key, defaultValue = {}) { return JSON.parse(localStorage.getItem(key)) || defaultValue; }
         function saveStoredData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
@@ -490,7 +478,6 @@
             }
             DOMElements.reportModal.highScoresContent.innerHTML = html;
         }
-
         function getInitialStats() {
             const difficulties = ['easy', 'medium', 'hard', 'custom', 'overall'];
             const initial = {};
@@ -502,7 +489,6 @@
         function updateStats(isWin) {
             const stats = getStoredData(STATS_KEY, getInitialStats());
             const diffKeyForStats = currentDifficulty.name === `Custom` ? 'custom' : (Object.keys(BASE_DIFFICULTIES).find(k=>BASE_DIFFICULTIES[k].name === currentDifficulty.name) || 'custom');
-
             function updateSingleStatSet(statSet, currentSeconds, isGameWin) {
                 statSet.played = (statSet.played || 0) + 1;
                 if (isGameWin) {
@@ -529,7 +515,6 @@
             const stats = getStoredData(STATS_KEY, getInitialStats()); 
             let html = '<table><thead><tr><th>Difficulty</th><th>Played</th><th>Won</th><th>Win %</th><th>Streak (Current/Max)</th><th>Best Time</th></tr></thead><tbody>';
             const difficultiesToDisplay = ['easy', 'medium', 'hard', 'custom', 'overall'];
-            
             difficultiesToDisplay.forEach(key => {
                 const s = stats[key] || { played: 0, won: 0, currentStreak: 0, maxStreak: 0, bestTime: Infinity };
                 const diffName = BASE_DIFFICULTIES[key]?.name || key.charAt(0).toUpperCase() + key.slice(1);
@@ -538,7 +523,6 @@
                 if (key !== 'custom' && key !== 'overall' && s.bestTime !== Infinity && s.bestTime !== undefined && s.bestTime !== null) {
                     bestTimeDisplay = s.bestTime + 's';
                 }
-
                 html += `<tr><td>${diffName}</td><td>${s.played}</td><td>${s.won}</td><td>${winPercent}</td><td>${s.currentStreak}/${s.maxStreak}</td><td>${bestTimeDisplay}</td></tr>`;
             });
             html += '</tbody></table>';
@@ -552,7 +536,6 @@
                 populateHighScoresContent(); 
             }
         }
-        
         function showReportModal(defaultTab = 'stats') {
             populateStatsContent();
             populateHighScoresContent();
@@ -561,7 +544,7 @@
                 DOMElements.reportModal.highScoresContent.classList.add('hidden');
                 DOMElements.reportModal.tabStatsButton.classList.add('active');
                 DOMElements.reportModal.tabHighScoresButton.classList.remove('active');
-            } else { // 'highScores'
+            } else {
                 DOMElements.reportModal.statsContent.classList.add('hidden');
                 DOMElements.reportModal.highScoresContent.classList.remove('hidden');
                 DOMElements.reportModal.tabStatsButton.classList.remove('active');
@@ -570,8 +553,6 @@
             DOMElements.reportModal.modal.style.display = 'flex';
         }
 
-
-        // --- Pause Game ---
         function togglePauseGame() {
             if (DOMElements.customErrorOverlay && !DOMElements.customErrorOverlay.classList.contains('hidden')) return;
 
@@ -592,7 +573,6 @@
             }
         }
 
-        // --- Dynamic Cell Sizing ---
         function determineDynamicCellSize() {
             if (!DOMElements || !DOMElements.gameBoard || !DOMElements.gameBoard.parentElement) {
                 currentDynamicCellSize = DEFAULT_CELL_SIZE_PX;
@@ -629,7 +609,6 @@
             }
         }
         
-        // --- Custom Input Validation ---
         function validateAllCustomInputs() { 
             let allValid = true;
             
@@ -659,8 +638,6 @@
             return allValid;
         }
 
-
-        // --- Core Game Logic ---
         function startGame() {
             const selectedDifficultyValue = DOMElements.difficultySelect.value;
             showCustomInputErrorOverlay(false); 
@@ -784,7 +761,6 @@
                     cellElement.style.width = `${currentDynamicCellSize}px`;
                     cellElement.style.height = `${currentDynamicCellSize}px`;
                     cellElement.style.fontSize = `${Math.max(9, Math.floor(currentDynamicCellSize * 0.5))}px`;
-
 
                     if (cellData.isRevealed) {
                         cellElement.classList.add('revealed');
@@ -1054,7 +1030,6 @@
             }
         }
 
-        // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
             DOMElements = {
                 gameBoard: document.getElementById('gameBoard'),
@@ -1116,12 +1091,10 @@
                 DOMElements.contactSection.classList.add('hidden');
                 DOMElements.mainGameContainer.classList.remove('hidden');
             });
-            
             DOMElements.messageModal.playerNameInput.addEventListener('input', validatePlayerNameInput); 
             DOMElements.messageModal.playerNameInput.addEventListener('keydown', (event) => {
                 const nameInput = DOMElements.messageModal.playerNameInput;
                 const errorElement = document.getElementById('playerNameError');
-                
                 if (nameInput.value.length >= PLAYER_NAME_MAX_LENGTH && 
                     event.key.length === 1 && 
                     !event.ctrlKey && !event.metaKey &&
@@ -1137,7 +1110,6 @@
                      setTimeout(validatePlayerNameInput, 0); 
                 }
             });
-
             const sanitizeAndValidateCustomInputHandler = (inputElement, maxLength) => {
                 let value = inputElement.value;
                 let sanitizedValue = value.replace(/\D/g, ''); 
@@ -1146,15 +1118,10 @@
                     sanitizedValue = sanitizedValue.substring(0, maxLength);
                 }
                 inputElement.value = sanitizedValue; 
-                // Removed validateAllCustomInputs() from here to avoid recursive calls on every input.
-                // Validation will happen when startGame is attempted.
             };
-
             DOMElements.customInputs.rows.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.rows, 3));
             DOMElements.customInputs.cols.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.cols, 3));
             DOMElements.customInputs.mines.addEventListener('input', () => sanitizeAndValidateCustomInputHandler(DOMElements.customInputs.mines, 4));
-
-
             DOMElements.difficultySelect.addEventListener('change', (e) => {
                 if (e.target.value === 'custom') {
                     DOMElements.customInputs.container.classList.remove('hidden');
@@ -1172,7 +1139,6 @@
                 }
                 startGame(); 
             });
-            
             const initialDifficultyValue = DOMElements.difficultySelect.value || 'medium';
             if (initialDifficultyValue === 'custom') {
                 DOMElements.customInputs.container.classList.remove('hidden');
