@@ -20,41 +20,40 @@ jobs:
         id: version_update
         run: |
           # Get the range of commits for the current push
-          # For the very first push, GITHUB_BEFORE will be 0000000000000000000000000000000000000000
           if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            COMMIT_RANGE="${{ github.sha }}" # Only the latest commit if it's the first push
+            COMMIT_RANGE="${{ github.sha }}"
             echo "::notice::First push detected. Checking only the latest commit: ${COMMIT_RANGE}"
           else
             COMMIT_RANGE="${{ github.event.before }}..${{ github.sha }}"
             echo "::notice::Detected push with commit range: ${COMMIT_RANGE}"
           fi
 
-          # Get all commit messages in the push
-          # We reverse the log to process the oldest commit in the push first,
-          # but the last one found with a version will be used.
           COMMIT_MESSAGES=$(git log --pretty=%B --reverse "${COMMIT_RANGE}")
-
           echo "::debug::Commit messages in push: $COMMIT_MESSAGES"
 
           LATEST_VERSION=""
           IS_BETA=false
           RAW_VERSION_LINE=""
 
-          # Regex to find "Version x.x.x (Beta)" or "Version x.x.x"
-          # It captures the version number and optionally (Beta)
-          VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+)( \(Beta\))?$"
+          # MODIFIED Regex to support "Version x.x.x" OR "Version x.x.x.x"
+          # It captures the full version (3 or 4 parts) in BASH_REMATCH[1]
+          # The optional fourth part is BASH_REMATCH[2]
+          # The optional "(Beta)" tag is BASH_REMATCH[3]
+          VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)( \(Beta\))?$"
 
           echo "$COMMIT_MESSAGES" | while IFS= read -r commit_msg_line; do
             echo "::debug::Checking commit message line: $commit_msg_line"
             if [[ "$commit_msg_line" =~ $VERSION_REGEX ]]; then
-              RAW_VERSION_LINE="$commit_msg_line" # Keep the full matched line for logging
-              LATEST_VERSION="${BASH_REMATCH[1]}"
-              if [[ -n "${BASH_REMATCH[2]}" ]]; then # If the second capture group ( (Beta)) is not empty
+              RAW_VERSION_LINE="$commit_msg_line"
+              LATEST_VERSION="${BASH_REMATCH[1]}" # Captures the full version (e.g., "1.2.3" or "1.2.3.4")
+              # BASH_REMATCH[2] would be the optional fourth part (e.g., ".4") if present
+              # BASH_REMATCH[3] captures the " (Beta)" part if present
+              if [[ -n "${BASH_REMATCH[3]}" ]]; then # Check if the Beta group was captured
                 IS_BETA=true
               else
                 IS_BETA=false
               fi
-              echo "::notice::Found version in commit: $LATEST_VERSION, Beta: $IS_BETA"
+              echo "::notice::Found version in commit: $LATEST_VERSION, Beta: $IS_BETA (Raw: $RAW_VERSION_LINE)"
             fi
           done
 
@@ -64,7 +63,7 @@ jobs:
             exit 0
           fi
 
-          TODAY_DATE=$(date +"%B %d, %Y")
+          TODAY_DATE=$(date +"%B %d, %Y") # Gets current date, e.g., "May 30, 2025"
           NEW_VERSION_STRING="**v${LATEST_VERSION}**"
 
           if [ "$IS_BETA" = true ]; then
@@ -77,27 +76,27 @@ jobs:
 
           echo "::notice::New version line to be written: $NEW_VERSION_LINE"
 
-          # Read the README and update the version line
           awk -v new_line="$NEW_VERSION_LINE" '
           BEGIN { found_section = 0; replaced = 0 }
           /## 🚀 Latest Version/ { found_section = 1; print; next }
-          found_section == 1 && /^(\*\*v[0-9]+\.[0-9]+\.[0-9]+.*?\*\*.*–.*)/ {
+          # This regex should still work as it matches the general structure of the version line
+          found_section == 1 && /^(\*\*v[0-9]+\.[0-9]+(\.[0-9]+){0,2}.*?\*\*.*–.*)/ {
             if (replaced == 0) {
               print new_line
               replaced = 1
             }
-            next # Skip printing the old version line
+            next
           }
           { print }
           END { if (found_section == 0) { print "## 🚀 Latest Version"; print new_line } }
           ' "$README_FILE" > "$TEMP_README"
 
           if cmp -s "$README_FILE" "$TEMP_README"; then
-            echo "::notice::README.md is already up to date with version $LATEST_VERSION."
+            echo "::notice::README.md is already up to date with version $LATEST_VERSION and today's date."
             echo "readme_updated=false" >> $GITHUB_OUTPUT
             rm "$TEMP_README"
           else
-            echo "::notice::Updating README.md with version $LATEST_VERSION."
+            echo "::notice::Updating README.md with version $LATEST_VERSION and date $TODAY_DATE."
             mv "$TEMP_README" "$README_FILE"
             echo "readme_updated=true" >> $GITHUB_OUTPUT
             echo "new_version_line=${NEW_VERSION_LINE}" >> $GITHUB_OUTPUT
@@ -109,7 +108,9 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add README.md
-          git commit -m "docs: Update README with latest version ${{ steps.version_update.outputs.new_version_line }}"
+          git commit -m "docs: Update README with latest version and date
+
+          ${{ steps.version_update.outputs.new_version_line }}"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
