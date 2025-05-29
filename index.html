@@ -290,7 +290,7 @@
 		<div class="flex justify-between items-center mb-4">
 			<h1 class="text-3xl font-bold">Minesweeper</h1>
 			<div class="flex items-center space-x-2">
-				<button id="contactButton" class="button-secondary text-sm px-2 py-1 rounded-md">✉️ Contact</button>
+				<a href="contact.html" class="button-secondary text-sm px-2 py-1 rounded-md">✉️ Contact</a>
 				<button id="viewReportButton" class="button-secondary text-sm px-2 py-1 rounded-md">📊 Report</button>
 				<select id="themeSelector" class="input-default text-sm rounded-md shadow-sm border-default focus:outline-none">
 					<option value="classic">Classic</option>
@@ -345,22 +345,6 @@
 					<p class="text-sm">Please correct the custom difficulty inputs.</p>
 				</div>
 			</div>
-		</div>
-    </div>
-
-	<div id="contactSection" class="main-container p-6 rounded-lg w-full max-w-5xl hidden">
-		<div class="flex justify-between items-center mb-6">
-			<h1 class="text-3xl font-bold">Contact Me</h1>
-			<button id="backToGameButton" class="button-primary px-4 py-2 rounded-lg text-sm">Back to Game</button>
-		</div>
-		<div class="text-left space-y-4">
-			<p>Got feedback, questions, or just want to say hi? Reach out below.</p>
-			<p><strong>Email:</strong> <a href="mailto:feedback@mnpl.ir" class="text-blue-500 hover:underline">feedback@mnpl.ir</a></p>
-			<p><strong>Telegram:</strong> <a href="https://t.me/xx_kittyy" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">t.me/xx_kittyy</a></p>
-			<p>I’ll try to respond as soon as I can. Thanks for visiting!</p>
-			<hr class="my-6 border-default">
-			<p>This project is open-source and hosted on GitHub, with performance and security powered by Cloudflare.</p>
-			<p><strong>View the repository:</strong> <a href="https://github.com/femdiya/femdiya.github.io" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">github.com/femdiya/femdiya.github.io</a></p>
 		</div>
     </div>
 
@@ -1064,10 +1048,7 @@
 				pauseOverlay: document.getElementById('pauseOverlay'),
 				viewReportButton: document.getElementById('viewReportButton'),
 				customErrorOverlay: document.getElementById('customErrorOverlay'),
-				contactSection: document.getElementById('contactSection'),
-				mainGameContainer: document.getElementById('mainGameContainer'),
 				contactButton: document.getElementById('contactButton'),
-				backToGameButton: document.getElementById('backToGameButton')
 			};
 
 			initAudio(); loadTheme();
@@ -1082,14 +1063,6 @@
 			DOMElements.smiley.addEventListener('click', startGame);
 			DOMElements.themeSelector.addEventListener('change', (e) => applyTheme(e.target.value));
 			DOMElements.muteButton.addEventListener('click', toggleMute);
-			DOMElements.contactButton.addEventListener('click', () => {
-				DOMElements.mainGameContainer.classList.add('hidden');
-				DOMElements.contactSection.classList.remove('hidden');
-			});
-			DOMElements.backToGameButton.addEventListener('click', () => {
-				DOMElements.contactSection.classList.add('hidden');
-				DOMElements.mainGameContainer.classList.remove('hidden');
-			});
 
 			DOMElements.messageModal.playerNameInput.addEventListener('input', validatePlayerNameInput);
 			DOMElements.messageModal.playerNameInput.addEventListener('keydown', (event) => {
@@ -1134,7 +1107,7 @@
 					const mVal = parseInt(DOMElements.customInputs.mines.value);
 					DOMElements.customInputs.rows.value = (isNaN(rVal) || rVal < 5 || rVal > 100) ? 10 : rVal;
 					DOMElements.customInputs.cols.value = (isNaN(cVal) || cVal < 5 || cVal > 100) ? 10 : cVal;
-					DOMElements.customInputs.mines.value = (isNaN(mVal) || mVal < 10) ? 10 : mVal; 
+					DOMElements.customInputs.mines.value = (isNaN(mVal) || mVal < 10) ? 10 : mVal;
 				} else {
 					DOMElements.customInputs.container.classList.add('hidden');
 					DOMElements.customInputs.container.classList.remove('flex');
