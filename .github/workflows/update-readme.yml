@@ -39,15 +39,17 @@ jobs:
           # It captures the full version (3 or 4 parts) in BASH_REMATCH[1]
           # The optional fourth part is BASH_REMATCH[2]
           # The optional "(Beta)" tag is BASH_REMATCH[3]
-          VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)( \(Beta\))?$"
+          VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)( [(]Beta[)])?$"
 
           echo "$COMMIT_MESSAGES" | while IFS= read -r commit_msg_line; do
             echo "::debug::Checking commit message line: $commit_msg_line"
+            # Add more debug right before the if, just in case:
+            echo "::debug::Line to check (ASCII): >>>$(printf '%s' "$commit_msg_line" | od -c)<<<"
+            echo "::debug::Regex being used: >>>${VERSION_REGEX}<<<"
+
             if [[ "$commit_msg_line" =~ $VERSION_REGEX ]]; then
               RAW_VERSION_LINE="$commit_msg_line"
-              LATEST_VERSION="${BASH_REMATCH[1]}" # Captures the full version (e.g., "1.2.3" or "1.2.3.4")
-              # BASH_REMATCH[2] would be the optional fourth part (e.g., ".4") if present
-              # BASH_REMATCH[3] captures the " (Beta)" part if present
+              LATEST_VERSION="${BASH_REMATCH[1]}" 
               if [[ -n "${BASH_REMATCH[3]}" ]]; then # Check if the Beta group was captured
                 IS_BETA=true
               else
@@ -56,7 +58,6 @@ jobs:
               echo "::notice::Found version in commit: $LATEST_VERSION, Beta: $IS_BETA (Raw: $RAW_VERSION_LINE)"
             fi
           done
-
           if [ -z "$LATEST_VERSION" ]; then
             echo "::warning::No version found in commit messages for this push."
             echo "readme_updated=false" >> $GITHUB_OUTPUT
