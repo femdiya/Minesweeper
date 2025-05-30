@@ -29,7 +29,6 @@ jobs:
           fi
 
           COMMIT_MESSAGES=$(git log --pretty=%B --reverse "${COMMIT_RANGE}")
-          # For debugging, show the raw messages
           echo "::debug::Raw commit messages from git log:"
           echo "$COMMIT_MESSAGES"
           echo "::debug::End of raw commit messages."
@@ -40,33 +39,28 @@ jobs:
           IS_BETA=false
           RAW_VERSION_LINE=""
 
-          # Regex to support "Version x.x.x" OR "Version x.x.x.x"
-          # Uses character classes for parentheses in (Beta) for robustness
           VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)( [(]Beta[)])?$"
 
-          echo "$COMMIT_MESSAGES" | while IFS= read -r commit_msg_line; do
-            # --- THIS IS THE CRITICAL FIX ---
+          # --- MODIFIED LOOP TO AVOID SUBSHELL ---
+          while IFS= read -r commit_msg_line; do
             # Remove trailing carriage return (if any) from the line
             commit_msg_line="${commit_msg_line%$'\r'}"
-            # --- END OF CRITICAL FIX ---
 
             echo "::debug::Checking commit message line (CR stripped): $commit_msg_line"
-            # Optional: If still debugging, you can uncomment the od -c line
-            # echo "::debug::Line (CR stripped) (ASCII): >>>$(printf '%s' "$commit_msg_line" | od -c)<<<"
-            echo "::debug::Regex being used: >>>${VERSION_REGEX}<<<"
+            # echo "::debug::Regex being used: >>>${VERSION_REGEX}<<<" # Optional
 
             if [[ "$commit_msg_line" =~ $VERSION_REGEX ]]; then
-              RAW_VERSION_LINE="$commit_msg_line" # This will be the CR-stripped line
-              LATEST_VERSION="${BASH_REMATCH[1]}" # Captures the full version (e.g., "1.2.3" or "1.2.3.4")
-              # BASH_REMATCH[3] captures the " (Beta)" part if present
-              if [[ -n "${BASH_REMATCH[3]}" ]]; then # Check if the Beta group was captured
+              RAW_VERSION_LINE="$commit_msg_line"
+              LATEST_VERSION="${BASH_REMATCH[1]}"
+              if [[ -n "${BASH_REMATCH[3]}" ]]; then
                 IS_BETA=true
               else
                 IS_BETA=false
               fi
               echo "::notice::Found version in commit: $LATEST_VERSION, Beta: $IS_BETA (Raw processed line: $RAW_VERSION_LINE)"
             fi
-          done
+          done <<< "$COMMIT_MESSAGES" # Feed COMMIT_MESSAGES via a here-string
+          # --- END OF MODIFIED LOOP ---
           echo "---"
 
           if [ -z "$LATEST_VERSION" ]; then
@@ -75,7 +69,7 @@ jobs:
             exit 0
           fi
 
-          TODAY_DATE=$(date +"%B %d, %Y")
+          TODAY_DATE=$(date +"%B %d, %Y") # Example: May 30, 2025
           NEW_VERSION_STRING="**v${LATEST_VERSION}**"
 
           if [ "$IS_BETA" = true ]; then
