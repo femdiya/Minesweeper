@@ -3,29 +3,26 @@ name: Update README Latest Version
 on:
   push:
     branches:
-      - main # Or your default branch
+      - main
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required to write to the repository
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for all tags and branches
+          fetch-depth: 0
 
       - name: Extract Version and Update README
         id: version_update
         run: |
-          # Get the range of commits for the current push
           if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
             COMMIT_RANGE="${{ github.sha }}"
-            echo "::notice::First push detected. Checking only the latest commit: ${COMMIT_RANGE}"
           else
             COMMIT_RANGE="${{ github.event.before }}..${{ github.sha }}"
-            echo "::notice::Detected push with commit range: ${COMMIT_RANGE}"
           fi
 
           COMMIT_MESSAGES=$(git log --pretty=%B --reverse "${COMMIT_RANGE}")
@@ -34,21 +31,16 @@ jobs:
           echo "::debug::End of raw commit messages."
           echo "---"
 
-
           LATEST_VERSION=""
           IS_BETA=false
           RAW_VERSION_LINE=""
 
           VERSION_REGEX="^Version ([0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?)( [(]Beta[)])?$"
 
-          # --- MODIFIED LOOP TO AVOID SUBSHELL ---
           while IFS= read -r commit_msg_line; do
-            # Remove trailing carriage return (if any) from the line
             commit_msg_line="${commit_msg_line%$'\r'}"
-
             echo "::debug::Checking commit message line (CR stripped): $commit_msg_line"
-            # echo "::debug::Regex being used: >>>${VERSION_REGEX}<<<" # Optional
-
+            echo "::debug::Regex being used: >>>${VERSION_REGEX}<<<"
             if [[ "$commit_msg_line" =~ $VERSION_REGEX ]]; then
               RAW_VERSION_LINE="$commit_msg_line"
               LATEST_VERSION="${BASH_REMATCH[1]}"
@@ -59,8 +51,7 @@ jobs:
               fi
               echo "::notice::Found version in commit: $LATEST_VERSION, Beta: $IS_BETA (Raw processed line: $RAW_VERSION_LINE)"
             fi
-          done <<< "$COMMIT_MESSAGES" # Feed COMMIT_MESSAGES via a here-string
-          # --- END OF MODIFIED LOOP ---
+          done <<< "$COMMIT_MESSAGES"
           echo "---"
 
           if [ -z "$LATEST_VERSION" ]; then
@@ -69,7 +60,7 @@ jobs:
             exit 0
           fi
 
-          TODAY_DATE=$(date +"%B %d, %Y") # Example: May 30, 2025
+          TODAY_DATE=$(date +"%B %d, %Y")
           NEW_VERSION_STRING="**v${LATEST_VERSION}**"
 
           if [ "$IS_BETA" = true ]; then
@@ -79,7 +70,6 @@ jobs:
           NEW_VERSION_LINE="${NEW_VERSION_STRING} – ${TODAY_DATE}"
           README_FILE="README.md"
           TEMP_README="README.md.tmp"
-
           echo "::notice::New version line to be written: $NEW_VERSION_LINE"
 
           awk -v new_line="$NEW_VERSION_LINE" '
