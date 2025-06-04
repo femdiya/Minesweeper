@@ -1040,6 +1040,14 @@
 				DOMElements.customInputs.mines.value = DOMElements.customInputs.mines.value || 10;
 			}
 			startGame();
+			document.addEventListener('mouseup', () => {
+				if (isMousePressedOnCell) {
+					isMousePressedOnCell = false;
+					if (!gameOver) {
+						updateSmileyFace(SMILEY_NEUTRAL);
+					}
+				}
+			});
 		});
 	</script>
 </body>
