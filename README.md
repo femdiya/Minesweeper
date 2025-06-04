@@ -22,4 +22,4 @@ For discussions, community engagement, and more direct ways to connect, you can 
 This project is licensed under the [MIT License](LICENSE).
 You are free to use, modify, and distribute it with proper attribution.
 
-© 2025 kittyy
+© 2025 Bardiya
