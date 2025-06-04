@@ -5,6 +5,7 @@ This project is a simple browser-based version of the classic **Minesweeper**. I
 
 ## 🤝 Contributing
 Contributions are welcomed! If you have suggestions, found a bug, or want to contribute code, please feel free to open an issue or submit a pull request here on GitHub.
+
 For discussions, community engagement, and more direct ways to connect, you can **visit our contact page at [mnpl.ir/contact](https://mnpl.ir/contact)**. We'd love to hear from you! -***PAGE UNDER CONSTRUCTION***-
 
 ## ⚙️ Technologies & Development Aids
