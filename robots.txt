@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+User-agent: *
+Disallow: /cdn-cgi/l/email-protection
+
 Sitemap: https://mnpl.ir/sitemap.xml
