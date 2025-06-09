@@ -714,7 +714,15 @@
 							cellElement.textContent = '❓';
 						}
 					}
-					cellElement.addEventListener('click', () => { if (!isPaused && !gameOver) handleCellClick(r, c); });
+					cellElement.addEventListener('click', () => {
+						if (isPaused || gameOver) return;
+						const cellData = board[r][c];
+						if (cellData.isRevealed && cellData.adjacentMines > 0 && !cellData.isMine) {
+							handleMiddleClickChord(r, c);
+						} else {
+							handleCellClick(r, c);
+						}
+					});
 					cellElement.addEventListener('contextmenu', (e) => { e.preventDefault(); if (!isPaused && !gameOver) handleCellRightClick(r, c); });
 					cellElement.addEventListener('mousedown', (event) => {
 						if (isPaused || gameOver || (DOMElements.customErrorOverlay && DOMElements.customErrorOverlay.style.display === 'flex') ) return;
