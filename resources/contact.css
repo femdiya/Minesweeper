@@ -1,0 +1,152 @@
+:root {
+    --body-bg: #f3f4f6;
+    --container-bg: #ffffff;
+    --container-shadow: #d1d5db;
+    --text-color: #1f2937;
+    --text-muted-color: #4b5563;
+    --border-color: #d1d5db;
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+    --button-bg: #3b82f6;
+    --button-hover-bg: #2563eb;
+    --button-text-color: #ffffff;
+    --smiley-bg: #e5e7eb;
+    --smiley-border: #9ca3af;
+    --cell-hidden-bg: #d1d5db;
+    --cell-hidden-hover-bg: #e5e7eb;
+    --cell-revealed-bg: #f9fafb;
+    --cell-border-color: #9ca3af;
+    --cell-mine-bg: #ef4444;
+    --cell-mine-text: #ffffff;
+    --cell-flagged-bg: #facc15;
+    --cell-question-bg: #a5b4fc;
+    --cell-question-text: #3730a3;
+    --game-board-bg: #9ca3af;
+    --cell-misflagged-text: #dc2626;
+    --cell-detonated-mine-bg: #b91c1c;
+    --pause-overlay-bg: rgba(0, 0, 0, 0.65);
+    --pause-icon-color: #ffffff;
+    --pause-overlay-content-bg: var(--container-bg);
+    --error-overlay-bg: rgba(50, 50, 50, 0.5);
+    --error-overlay-text-color: var(--cell-misflagged-text);
+    --error-overlay-content-bg: var(--container-bg);
+    --tab-active-border: var(--button-bg);
+    --tab-active-text: var(--button-bg);
+    --control-button-bg: var(--cell-hidden-hover-bg);
+    --control-button-hover-bg: var(--cell-hidden-bg);
+    --control-button-text: var(--text-color);
+    --control-button-border: var(--border-color);
+    --input-error-text: var(--cell-misflagged-text);
+    --cell-num-1: #3b82f6;
+    --cell-num-2: #10b981;
+    --cell-num-3: #ef4444;
+    --cell-num-4: #6366f1;
+    --cell-num-5: #8b5cf6;
+    --cell-num-6: #ec4899;
+    --cell-num-7: #f97316;
+    --cell-num-8: #78716c;
+}
+
+html[data-theme='dark'] {
+    --body-bg: #111827;
+    --container-bg: #1f2937;
+    --container-shadow: #374151;
+    --text-color: #f9fafb;
+    --text-muted-color: #9ca3af;
+    --border-color: #4b5563;
+    --input-bg: #374151;
+    --input-border: #4b5563;
+    --button-bg: #3b82f6;
+    --button-hover-bg: #2563eb;
+    --button-text-color: #ffffff;
+    --smiley-bg: #374151;
+    --smiley-border: #6b7280;
+    --cell-hidden-bg: #4b5563;
+    --cell-hidden-hover-bg: #6b7280;
+    --cell-revealed-bg: #374151;
+    --cell-border-color: #6b7280;
+    --cell-mine-bg: #ef4444;
+    --cell-mine-text: #ffffff;
+    --cell-flagged-bg: #facc15;
+    --cell-question-bg: #a5b4fc;
+    --cell-question-text: #3730a3;
+    --game-board-bg: #374151;
+    --cell-misflagged-text: #f87171;
+    --cell-detonated-mine-bg: #b91c1c;
+    --pause-overlay-bg: rgba(0, 0, 0, 0.75);
+    --pause-icon-color: #ffffff;
+    --tab-active-border: var(--button-bg);
+    --tab-active-text: var(--button-bg);
+    --control-button-bg: var(--cell-hidden-hover-bg);
+    --control-button-hover-bg: var(--cell-hidden-bg);
+    --control-button-text: var(--text-color);
+    --control-button-border: var(--border-color);
+    --input-error-text: var(--cell-misflagged-text);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    background-color: var(--body-bg);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.main-container {
+    background-color: var(--container-bg);
+    box-shadow: 0 10px 15px -3px var(--container-shadow), 0 4px 6px -2px var(--container-shadow);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.text-muted {
+    color: var(--text-muted-color);
+}
+
+.border-default {
+    border-color: var(--border-color);
+}
+
+.button-primary {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    transition: background-color 0.15s ease-in-out;
+}
+
+.button-primary:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.button-secondary {
+    background-color: var(--cell-hidden-hover-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.button-secondary:hover {
+    background-color: var(--cell-hidden-bg);
+}
+
+#theme-switcher {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+#theme-toggle-button {
+    background-color: var(--control-button-bg);
+    color: var(--control-button-text);
+    border: 1px solid var(--control-button-border);
+}
+
+#theme-toggle-button:hover {
+    background-color: var(--control-button-hover-bg);
+}
+
+#theme-menu {
+    background-color: var(--container-bg);
+    color: var(--text-color);
+}
+
+.theme-menu-item:hover {
+    background-color: var(--cell-hidden-hover-bg);
+}

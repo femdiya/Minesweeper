@@ -7,45 +7,56 @@
 	<meta name="description" content="Get in touch with the creator of mnpl.ir Minesweeper. Find contact details for feedback, questions, or support related to the game.">
 	<script src="https://cdn.tailwindcss.com"></script>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<style>
-		:root {
-			--body-bg: #f3f4f6; --container-bg: #ffffff; --container-shadow: #d1d5db;
-			--text-color: #1f2937; --text-muted-color: #4b5563; --border-color: #d1d5db;
-			--input-bg: #ffffff; --input-border: #d1d5db; --button-bg: #3b82f6;
-			--button-hover-bg: #2563eb; --button-text-color: #ffffff;
-			--smiley-bg: #e5e7eb; --smiley-border: #9ca3af; --cell-hidden-bg: #d1d5db;
-			--cell-hidden-hover-bg: #e5e7eb; --cell-revealed-bg: #f9fafb;
-			--cell-border-color: #9ca3af; --cell-mine-bg: #ef4444; --cell-mine-text: #ffffff;
-			--cell-flagged-bg: #facc15; --cell-question-bg: #a5b4fc; --cell-question-text: #3730a3;
-			--game-board-bg: #9ca3af; --cell-misflagged-text: #dc2626;
-			--cell-detonated-mine-bg: #b91c1c;
-			--pause-overlay-bg: rgba(0,0,0,0.65); --pause-icon-color: #ffffff;
-			--pause-overlay-content-bg: var(--container-bg);
-			--error-overlay-bg: rgba(50, 50, 50, 0.5);
-			--error-overlay-text-color: var(--cell-misflagged-text);
-			--error-overlay-content-bg: var(--container-bg);
-			--tab-active-border: var(--button-bg);
-			--tab-active-text: var(--button-bg);
-			--control-button-bg: var(--cell-hidden-hover-bg);
-			--control-button-hover-bg: var(--cell-hidden-bg);
-			--control-button-text: var(--text-color);
-			--control-button-border: var(--border-color);
-			--input-error-text: var(--cell-misflagged-text);
-			--cell-num-1: #3b82f6; --cell-num-2: #10b981; --cell-num-3: #ef4444;
-			--cell-num-4: #6366f1; --cell-num-5: #8b5cf6; --cell-num-6: #ec4899;
-			--cell-num-7: #f97316; --cell-num-8: #78716c;
-		}
-		body { font-family: 'Inter', sans-serif; user-select: none; background-color: var(--body-bg); color: var(--text-color); transition: background-color 0.3s, color 0.3s; }
-		.main-container { background-color: var(--container-bg); box-shadow: 0 10px 15px -3px var(--container-shadow), 0 4px 6px -2px var(--container-shadow); transition: background-color 0.3s, box-shadow 0.3s; }
-		.text-muted { color: var(--text-muted-color); }
-		.border-default { border-color: var(--border-color); }
-		.button-primary { background-color: var(--button-bg); color: var(--button-text-color); transition: background-color 0.15s ease-in-out; }
-		.button-primary:hover { background-color: var(--button-hover-bg); }
-		.button-secondary { background-color: var(--cell-hidden-hover-bg); color: var(--text-color); border: 1px solid var(--border-color); }
-		.button-secondary:hover { background-color: var(--cell-hidden-bg); }
-	</style>
+	<link rel="stylesheet" href="/resources/contact.css">
+    <script>
+		// This is a temporary solution to ensure theme is applied immediately
+        // The full theme logic will be moved to contact.js once the page structure is stable
+        const theme = {
+            init() {
+                this.set(this.get());
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                    if (this.get() === 'system') {
+                        this.set('system');
+                    }
+                });
+            },
+            get() {
+                return localStorage.getItem('theme') || 'system';
+            },
+            set(theme) {
+                if (theme !== 'light' && theme !== 'dark' && theme !== 'system') {
+                    theme = 'system';
+                }
+                localStorage.setItem('theme', theme);
+                const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            }
+        };
+        theme.init();
+    </script>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
+    <div id="theme-switcher" class="absolute top-4 right-4 z-10">
+        <button id="theme-toggle-button" type="button" class="p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"></button>
+		
+        <div id="theme-menu" class="hidden absolute right-0 mt-2 w-36 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+            <div class="py-1">
+                <button data-theme="light" class="theme-menu-item flex items-center w-full px-4 py-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                    Light
+                </button>
+                <button data-theme="dark" class="theme-menu-item flex items-center w-full px-4 py-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    Dark
+                </button>
+                <button data-theme="system" class="theme-menu-item flex items-center w-full px-4 py-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg>
+                    System
+                </button>
+            </div>
+        </div>
+    </div>
+
 	<div id="contactSection" class="main-container p-6 rounded-lg w-full max-w-5xl">
 		<div class="flex justify-between items-center mb-6">
 			<h1 class="text-3xl font-bold">Contact Me</h1>
@@ -61,5 +72,7 @@
 			<p><strong>View the repository:</strong> <a href="https://github.com/femdiya/Minesweeper" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">github.com/femdiya/Minesweeper</a></p>
 		</div>
 	</div>
+
+	<script src="/resources/contact.js"></script>
 </body>
 </html>
